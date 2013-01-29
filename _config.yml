@@ -2,10 +2,10 @@
 #      Main Configs       #
 # ----------------------- #
 
-url: http://yoursite.com
-title: My Octopress Blog
-subtitle: A blogging framework for hackers.
-author: Your Name
+url: http://isaachan.github.com
+title: (i (think about (code)))
+subtitle: "To iterate is human, to recurse divine." – L. Peter Deutsch
+Your Name: Isaac Han
 simple_search: http://google.com/search
 description:
 
