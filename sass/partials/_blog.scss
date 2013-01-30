@@ -97,12 +97,13 @@ article + article {
 	border-top: 4px solid $article-border;
   }
   article:first-child {
-    padding-top: 1em;
+    padding-top: 5em;
     border-top: none;
   }
   article header { background: none; }
   article h1 {
     a { color: inherit; &:hover { color: $link-color-hover; } }
+    font-size: 2em;
   }
   a[rel=full-article] {
     display: inline-block;
