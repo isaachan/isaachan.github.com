@@ -4,7 +4,7 @@
 
 url: http://isaachan.github.com
 title: (i (think about (code)))
-subtitle: "To iterate is human, to recurse divine." – L. Peter Deutsch
+subtitle: To iterate is human, to recurse divine.
 Your Name: Isaac Han
 simple_search: http://google.com/search
 description:
@@ -71,7 +71,7 @@ twitter_follow_button: true
 twitter_show_follower_count: false
 twitter_tweet_button: true
 
-# Google +1
+# Google +1	      
 google_plus_one: false
 google_plus_one_size: medium
 
