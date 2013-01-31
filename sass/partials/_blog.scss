@@ -5,6 +5,7 @@ article {
     position: relative;
     h1 {
       margin: 0;
+      font-size: 2em;
       a { text-decoration: none;
         &:hover { text-decoration: none; } }
     }
@@ -97,7 +98,7 @@ article + article {
 	border-top: 4px solid $article-border;
   }
   article:first-child {
-    padding-top: 5em;
+    padding-top: 3em;
     border-top: none;
   }
   article header { background: none; }
