@@ -9,8 +9,7 @@
   <meta name="author" content="">
 
   
-  <meta name="description" content="理想这个东西，刚刚带上总会让人受伤。 但是时间长了以后，它却像鸦片一样，成为你生命里离不开的东西。你每天就为了它而奔波。 你懂的。
-">
+  <meta name="description" content="概述 这篇论文讲述了如何利用Prolog开发一个全新的并发实时符号程序设计语言，也就是后来的Erlang。 Erlang的第一个原型是由Prolog开发的——这个原型曾交给一个用户组使用，并收集他们对新语言的反馈。随着时间流逝，解释器被增增删删了无数特性，终于达到了一个成熟级别， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -63,6 +62,55 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/02/03/use-prolog-creating-new-language/">[翻译] 使用Prolog开发新语言</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-03T12:44:00+08:00" pubdate data-updated="true">Feb 3<span>rd</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>概述</h2>
+
+<p>这篇论文讲述了如何利用Prolog开发一个全新的并发实时符号程序设计语言，也就是后来的Erlang。</p>
+
+<p>Erlang的第一个原型是由Prolog开发的——这个原型曾交给一个用户组使用，并收集他们对新语言的反馈。随着时间流逝，解释器被增增删删了无数特性，终于达到了一个成熟级别，可以用于一些关键领域了。</p>
+
+<p>在以后的3年里，人们大约写了20000行Erlang代码，这时性能成为问题了——我们写过Prlog交叉编译器，编译Erlang以及各种并发逻辑程序设计语言。Erlang的实现不严格地基于WAM，它包含一个Prolog的编译器，将Erlang编译为新的抽象机的指令，还包含一个C开发的模拟器。抽象机的指令集最初是用Prolog创建的原型——最后编译器用Erlang重写了，从而彻底移除了对Prolog的依赖。</p>
+
+<p>这篇论文讲述了Erlang从一个简单原型发展到当前版本的过程中，发生的一些关键的事件。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2013/02/03/use-prolog-creating-new-language/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>

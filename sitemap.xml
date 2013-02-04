@@ -2,18 +2,22 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://isaachan.github.com/blog/2013/01/31/about-ideal/</loc>
-        <lastmod>2013-02-04T22:37:07+08:00</lastmod>
+        <lastmod>2013-02-04T22:51:36+08:00</lastmod>
+    </url>
+    <url>
+        <loc>http://isaachan.github.com/blog/2013/02/03/use-prolog-creating-new-language/</loc>
+        <lastmod>2013-02-04T22:57:06+08:00</lastmod>
     </url>
     <url>
         <loc>http://isaachan.github.com/404.html</loc>
-        <lastmod>2013-02-04T22:37:07+08:00</lastmod>
+        <lastmod>2013-02-04T22:51:36+08:00</lastmod>
     </url>
     <url>
         <loc>http://isaachan.github.com/</loc>
-        <lastmod>2013-02-04T22:37:07+08:00</lastmod>
+        <lastmod>2013-02-04T22:57:06+08:00</lastmod>
     </url>
     <url>
         <loc>http://isaachan.github.com/blog/archives/</loc>
-        <lastmod>2013-02-04T22:37:07+08:00</lastmod>
+        <lastmod>2013-02-04T22:57:06+08:00</lastmod>
     </url>
 </urlset>
