@@ -3,7 +3,7 @@ layout: post
 title: "[翻译] 使用Prolog开发新语言"
 date: 2013-02-03 12:44
 comments: true
-published: false
+published: true
 categories: 
  - prolog
  - erlang
