@@ -136,7 +136,7 @@ R=[c,b,a] ?
 
 
 以fact为例，如果追踪reduce/1的完整执行信息，会得到下面的输出：
-{% codeblok lang:prolog %}
+{% codeblock lang:prolog %}
 reduce([fact(3,X1), {write(result(X1)), nl}]).
 reduce([{X3 is 3-1}, fact(X3,X2), {X1 is 3*X2}, {write(result(X1)), nl}]).
 reduce([fact(2,X2), {X1 is 3*X2}, {write(result(X1)), nl}]).
@@ -166,9 +166,12 @@ reduce(GoalList, Reductions, Result)
 reduce([], N, terminated(N)) :- !.
 reduce(Goals, 20, continuation(Goals)) :- !.
 reduce([{X}|T, Reds, Result) :-
-    call(X), !,    Reds1 is Reds + 1,
-    reduce(T, Reds1, Result).reduce([Lhs|More], Reds, Result) :- 
-    eqn(Lhs, Rhs),    append(Rhs, More, More1),
+    call(X), !,
+    Reds1 is Reds + 1,
+    reduce(T, Reds1, Result).
+reduce([Lhs|More], Reds, Result) :- 
+    eqn(Lhs, Rhs),
+    append(Rhs, More, More1),
     Reds1 is Reds + 1,
     reduce(More1, Reds1, Result).
 {% endcodeblock %}
@@ -178,12 +181,14 @@ reduce([{X}|T, Reds, Result) :-
 {% codeblock lang:prolog %}
 …
 ?- reduce([nrev[a,b,c,d,e], R), {write(result(R)), nl}], 0, Result),
-   write(reduce(Result)).reduce(continuation({concat[], [a], X1),
+   write(reduce(Result)).
+reduce(continuation({concat[], [a], X1),
             {write(result([e,d,c,b|_1225)), nl}]))
 
 Re = [e,d,c,b|X1},
 Result = continuation([concat([],[a],X1),
-               {write(result([e,d,c,b|X1])),nl}]) ?…
+               {write(result([e,d,c,b|X1])),nl}]) ?
+…
 {% endcodeblock %}
 
 当然，我们可以重新执行余下来的计算步骤，
@@ -198,23 +203,46 @@ continuation(New_Goals), reduce(New_Goals, 0, Result1)
 
 {% codeblock lang:prolog %}
 multi_reduce([]).
-multi_reduce([job(N, Goals)|T]) :-    write(starting(N)), nl,
+multi_reduce([job(N, Goals)|T]) :-
+    write(starting(N)), nl,
     reduce(Goals, 0, Result),
     multi_reduce(Result, N, T).
-multi_reduce(terminated(_), N, T) :-
+
+multi_reduce(terminated(_), N, T) :-
     write(terminating(N)), nl,
     multi_reduce(T).
-multi_reduce(continuation(Goals), N, Job_queue) :-
-    write(suspending(N)), nl,    append(Job_queue, [job(N, Goals)], New_job_queue),
+
+multi_reduce(continuation(Goals), N, Job_queue) :-
+    write(suspending(N)), nl,
+    append(Job_queue, [job(N, Goals)], New_job_queue),
     multi_reduce(New_job_queue).
 {% endcodeblock %}
 
 为了方便观察程序的行为，可以加入一些write语句：
 
 {% codeblock lang:prolog %}
-? multi_reduce([    job(1,[nrev([a,b,c,d,e,f,g,h],R), {write(job1®),nl}]),
-    job(2,[nrev([1,2,3,4,5],R1), {write(job2(R1)),nl}]),    job(3,[fact(10,Fact), {write(job3(Fact)),nl}])
-  ]).  starting(1)  suspending(1)  starting(2)  suspending(2)  starting(3)  suspending(3)  starting(1)  suspending(1)  starting(2)  job2([5,4,3,2,1])  terminating(2)  starting(3)  job3(3628800)  terminating(3)  starting(1)  job1([h,g,f,e,d,c,b,a])  terminating(1)
+? multi_reduce([
+    job(1,[nrev([a,b,c,d,e,f,g,h],R), {write(job1®),nl}]),
+    job(2,[nrev([1,2,3,4,5],R1), {write(job2(R1)),nl}]),
+    job(3,[fact(10,Fact), {write(job3(Fact)),nl}])
+  ]).
+  starting(1)
+  suspending(1)
+  starting(2)
+  suspending(2)
+  starting(3)
+  suspending(3)
+  starting(1)
+  suspending(1)
+  starting(2)
+  job2([5,4,3,2,1])
+  terminating(2)
+  starting(3)
+  job3(3628800)
+  terminating(3)
+  starting(1)
+  job1([h,g,f,e,d,c,b,a])
+  terminating(1)
 {% endcodeblock %}
 
 观察输出，我们能够看到三个目标nrev([a,b,c,d,e,f,g,h])，nrev([1,2,3,4,5], R1)和fact(10, Fact)在并发执行。
@@ -226,11 +254,23 @@ multi_reduce([job(N, Goals)|T]) :-    write(starting(N)), nl,
 我们暂时先忽略上下文切换的话题，还是回到一个基本的归并上来。我们定义一个新的reduce1/1，让它支持更有函数式风格的编程：
 
 {% codeblock lang:prolog %}
-reduce1([]).reduce1([Var = Rhs|T]) :- !,    reduce1([Rhs, '$bind'(Var)|T]).reduce1([return(Value), '$bind'(Var)|T]) :- !,    Var = Value,    reduce1(T).
-reduce1([{X}|T]) :-    call(X), !,
-    reduce1(T).reduce1([write(X)|T]) :- !,    write(X),    reduce1(T).
-reduce1([nl|T]) :- !,    nl,    reduce1(T). 
-reduce1([Lhs|More]) :-    eqn1(Lhs, Rhs), !,
+reduce1([]).
+reduce1([Var = Rhs|T]) :- !,
+    reduce1([Rhs, '$bind'(Var)|T]).
+reduce1([return(Value), '$bind'(Var)|T]) :- !,
+    Var = Value,
+    reduce1(T).
+reduce1([{X}|T]) :-
+    call(X), !,
+    reduce1(T).
+reduce1([write(X)|T]) :- !,
+    write(X),
+    reduce1(T).
+reduce1([nl|T]) :- !,
+    nl,
+    reduce1(T). 
+reduce1([Lhs|More]) :-
+    eqn1(Lhs, Rhs), !,
     append(Rhs, More, More1),
     reduce1(More1).
 {% endcodeblock %}
@@ -242,21 +282,34 @@ reduce1([Lhs|More]) :-    eqn1(Lhs, Rhs), !,
 
 {% codeblock lang:prolog %}
 eqn1(fact1(0), [
-     return(1)     ]).
-eqn1(fact1(N), [    {N1 is N - 1},    F1 = fact1(N1),
+     return(1)
+     ]).
+eqn1(fact1(N), [
+    {N1 is N - 1},
+    F1 = fact1(N1),
     {Result is N * F1},
-    return(Result)    ]).
+    return(Result)
+    ]).
 {% endcodeblock %}
 
 以及
 
 {% codeblock lang:prolog %}
 eqn1(nrev([H|T], [
-    T1 = nrev(T),    Result = concat(T1, [H]),
-    return(Result)    ]).eqn1(nrev([]), [
-    return([])    }).eqn1(concat([H|T], T1), [
-    T2 = concat(T, T1),    return([H|T2])
-    ]).eqn1(concat([], X), [    return(X)    ]).
+    T1 = nrev(T),
+    Result = concat(T1, [H]),
+    return(Result)
+    ]).
+eqn1(nrev([]), [
+    return([])
+    }).
+eqn1(concat([H|T], T1), [
+    T2 = concat(T, T1),
+    return([H|T2])
+    ]).
+eqn1(concat([], X), [
+    return(X)
+    ]).
 {% endcodeblock %}
 
 它运行后得到如下的结果：
@@ -283,23 +336,45 @@ X = [d,c,b,a] ?
 
 {% codeblock lang:prolog %}
 reduce2([], _, _, []) :- !,
-    write(stopped), nl.reduce2([], MyId, _, [job(Id, Goals, Msgs)|T]) :- !,
+    write(stopped), nl.
+reduce2([], MyId, _, [job(Id, Goals, Msgs)|T]) :- !,
     write(terminating(MyId), nl,
-    write(resuming(Id), nl,    reduce2(Goals, Id, Msgs, T).reduce2([spawn(Id, Goals)|T], MyId, MyMsgs, Env0) :- !,
-    write(spawning(Id)), nl.    append(Env0, [job(Id, Goals, [])], Env1),
-    reduce2(T, MyId, MyMsgs, Env1).reduce2([send(Id, Msg)T], MyId, MyMsgs, Env0) :- 
-    send(Id, Msg, Env0, Env1),    !,    reduce2(T, MyId, MyMsgs, Env1).reduce2([receive|T], MyId, [Message|More], Env) :- !,
-    reduce2([return(Message)|T], MyId, More, Env).reduce2([receive|T], MyId, [], Env) :- !,
-    write(suspending(MyId)), nl,    append(Env, [job(MyId, [receive|T], [])], Env1), 
-    reduce2([], none, [], Env1).reduce2(Var = Rhs|T], MyId, MyMsgs, Env) :- 
-    !,    reduce2([Rhs, '$bind'(Var)|T], MyId, MyMsgs, Env). 
-reduce2([return(Value), '$bind'(Var)|T], MyId, MyMsgs, Env) :- !,    Var = Value,    reduce2(T, MyId, MyMsgs, Env). 
-reduce2([{X}|T], MyId, MyMsgs, Env) :-    call(X), !,    reduce2(T, MyId, MyMsgs, Env).
-reduce2([Lhs|More], MyId, MyMsgs, Env) :-    eqn4(Lhs, Rhs), !,    append(Rhs, More, More1),
+    write(resuming(Id), nl,
+    reduce2(Goals, Id, Msgs, T).
+reduce2([spawn(Id, Goals)|T], MyId, MyMsgs, Env0) :- !,
+    write(spawning(Id)), nl.
+    append(Env0, [job(Id, Goals, [])], Env1),
+    reduce2(T, MyId, MyMsgs, Env1).
+reduce2([send(Id, Msg)T], MyId, MyMsgs, Env0) :- 
+    send(Id, Msg, Env0, Env1),
+    !,
+    reduce2(T, MyId, MyMsgs, Env1).
+reduce2([receive|T], MyId, [Message|More], Env) :- !,
+    reduce2([return(Message)|T], MyId, More, Env).
+reduce2([receive|T], MyId, [], Env) :- !,
+    write(suspending(MyId)), nl,
+    append(Env, [job(MyId, [receive|T], [])], Env1), 
+    reduce2([], none, [], Env1).
+reduce2(Var = Rhs|T], MyId, MyMsgs, Env) :- 
+    !,
+    reduce2([Rhs, '$bind'(Var)|T], MyId, MyMsgs, Env). 
+reduce2([return(Value), '$bind'(Var)|T], MyId, MyMsgs, Env) :- !,
+    Var = Value,
+    reduce2(T, MyId, MyMsgs, Env). 
+reduce2([{X}|T], MyId, MyMsgs, Env) :-
+    call(X), !,
+    reduce2(T, MyId, MyMsgs, Env).
+reduce2([Lhs|More], MyId, MyMsgs, Env) :-
+    eqn4(Lhs, Rhs), !,
+    append(Rhs, More, More1),
     reduce2(More1, MyId, MyMsgs, Env).
-send(Id, Msg, [job(Id, Goals, Messages)|T],
-           [job(Id, Goals, Messages1)|T]) :-    !,    append(Messages, [Msg], Messages1). 
-send(Id, Msg, [H|T], [H|T1]) :-    send(Id, Msg, T, T1).
+
+send(Id, Msg, [job(Id, Goals, Messages)|T],
+           [job(Id, Goals, Messages1)|T]) :-
+    !,
+    append(Messages, [Msg], Messages1). 
+send(Id, Msg, [H|T], [H|T1]) :-
+    send(Id, Msg, T, T1).
 {% endcodeblock %}
 
 元语言的原语spawn(Id, Goals)会调度一个新的进程，名字是Id，目标列表是Goals，send（Id， Message）会将消息Message发送到名为Id的进程。receive函数可以返回进程邮箱中的第一个值。
@@ -313,13 +388,27 @@ send(Id, Msg, [H|T], [H|T1]) :-    send(Id, Msg, T, T1).
 {% codeblock lang:prolog %}
 eqn2(go, [
      spawn(sender, [sender(5)]), 
-     spawn(catcher, [catch])     ]).eqn2(sender(0), [
+     spawn(catcher, [catch])
+     ]).
+eqn2(sender(0), [
      send(catcher, stop)
      ]).
 eqn2(sender(N), [
      {write(sending(pip(N))), nl},
-     send(catcher, pip(N)),     {N1 is N - 1},     sender(N1)     ]).eqn2(catch, [     X = receive,     {write(received(X)), nl}, 
-     catch(X)     ]).eqn2(catch(stop),     []).eqn2(catch(_), [     catch     ]).
+     send(catcher, pip(N)),
+     {N1 is N - 1},
+     sender(N1)
+     ]).
+eqn2(catch, [
+     X = receive,
+     {write(received(X)), nl}, 
+     catch(X)
+     ]).
+eqn2(catch(stop),
+     []).
+eqn2(catch(_), [
+     catch
+     ]).
 {% endcodeblock %}
 
 
@@ -327,9 +416,24 @@ eqn2(sender(N), [
 
 {% codeblock lang:prolog %}
 | ?- reduce2([go], startup, [], []).
-spawning(sender)spawning(catcher)
+spawning(sender)
+spawning(catcher)
 terminating(startup)
-resuming(sender)sending(pip(5))sending(pip(4))sending(pip(3))sending(pip(2))sending(pip(1))terminating(sender)resuming(catcher)received(pip(5))received(pip(4))received(pip(3))received(pip(2))received(pip(1))received(stop)stopped
+resuming(sender)
+sending(pip(5))
+sending(pip(4))
+sending(pip(3))
+sending(pip(2))
+sending(pip(1))
+terminating(sender)
+resuming(catcher)
+received(pip(5))
+received(pip(4))
+received(pip(3))
+received(pip(2))
+received(pip(1))
+received(stop)
+stopped
 {% endcodeblock %}
 
 ### 2.6 解释器特性小结 ###
@@ -385,24 +489,41 @@ resuming(sender)sending(pip(5))sending(pip(4))sending(pip(3))sending(pip(2))
 eqn1(fact1(0), [
       return(1)
       ]).
-eqn1(fact1(N), [     {N1 is N - 1},     F1 = fact1(N1), 
+eqn1(fact1(N), [
+     {N1 is N - 1},
+     F1 = fact1(N1), 
      {Result is N * F1},
-     return(Result)     ]).
-eqn1(nrev([H|T]), [ 
-     T1 = nrev(T),     Result = concat(T1, [H]), 
-     return(Result)     ]).eqn1(nrev([]), [
-     return([])     ]).
+     return(Result)
+     ]).
+
+eqn1(nrev([H|T]), [ 
+     T1 = nrev(T),
+     Result = concat(T1, [H]), 
+     return(Result)
+     ]).
+eqn1(nrev([]), [
+     return([])
+     ]).
 {% endcodeblock %}
 
 通过新定义的中缀操作符--->，我们可以忽略functor符号eqn1:
 
 {% codeblock lang:prolog %}
 fact1(0) --->
-    return(1).fact1(N) --->    {N1 is N - 1},    F1 = fact1(N1),
+    return(1).
+fact1(N) --->
+    {N1 is N - 1},
+    F1 = fact1(N1),
     {Result is N * F1}, 
     return(Result).
-nrev([H|T]) --->
-    T1 = nrev(T),    Result = concat(T1, [H]),    return(Result).nrev([]) --->    return([]).
+
+nrev([H|T]) --->
+    T1 = nrev(T),
+    Result = concat(T1, [H]),
+    return(Result).
+
+nrev([]) --->
+    return([]).
 {% endcodeblock %}
 
 上述的语法是真实用户面对的第一版语法。该语法的缺点是错误信息、运行时诊断消息都是以Prolog数据结构表现的，不是Erlang自己的。
@@ -412,9 +533,18 @@ fact1(0) --->
 上面的代码用新语法可以写成这样：
 
 {% codeblock lang:erlang %}
-nrev([H|T]) ->     T1 = nrev(T),     concat(T1, [H]).nrev([]) -> 
-     [].fact(0) ->
-     1.fact(N) ->     N1 = N - 1,     F1 = fact1(N1),     N * F1.
+nrev([H|T]) ->
+     T1 = nrev(T),
+     concat(T1, [H]).
+nrev([]) -> 
+     [].
+
+fact(0) ->
+     1.
+fact(N) ->
+     N1 = N - 1,
+     F1 = fact1(N1),
+     N * F1.
 {% endcodeblock %}
 
  
@@ -422,7 +552,10 @@ nrev([H|T]) ->     T1 = nrev(T),     concat(T1, [H]).nrev([]) ->
 
 {% codeblock lang:erlang %}
 nrev([H|T]) -> concat(nrev(T), [H]);
-nrev([]) -> [].fact(0) -> 1;fact(N) when N > 0 -> N * fact(N - 1).
+nrev([]) -> [].
+
+fact(0) -> 1;
+fact(N) when N > 0 -> N * fact(N - 1).
 {% endcodeblock %}
 
 上述每种语法的开销如下：
