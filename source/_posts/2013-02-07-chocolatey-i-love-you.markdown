@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "Chocolatey, 我爱你 （apt-get for Windows）"
+title: "Chocolatey, 我爱你"
 date: 2013-02-07 14:28
-comments: false
+comments: true
 categories: 
  - chocolatey
  - powershell
@@ -12,8 +12,6 @@ categories:
 
 巧克力在很多文化里都代表了美好的事物。如果你是Windows的使用者，可能Windows复杂、丑陋的包管理正在把你折腾的很惨。*NIX平台上的各种优雅的包管理工具这时让人非常眼馋。直到有一天Chocolatey出现了，让我看到了Windows平台上的包管理朝着正确的方向前进了。看来，和巧克力沾边的东西都能让人产生幸福的感觉。
 
-<!-- more -->
-
 ## 1. 安装 ##
 Chocolatey的安装过程简单至极，在[Chocolatey.org](http://chocolatey.org/)上最醒目的地方有一行命令，把它复制到命令行中运行，只要一分钟左右，安装就完成了。在命令下键入
 {% codeblock lang:powershell %}
@@ -21,6 +19,7 @@ chocolatey help
 {% endcodeblock %}
 
 可以验证安装是否成功。
+<!-- more -->
 
 ## 2. 初体验 ##
 默认情况下，Chocolatey会把自己安装到C:\Chocolatey目录下。该目录下还有三个子目录，它们的作用分别是
@@ -45,7 +44,7 @@ chocolatey install 7zip
 
 ## 3. 安装自己的包 ##
 
-在我写这篇博客的时候，我的机器上并没有中文输入法。在Chocolatey上寻找未果后（[http://chocolatey.org/packages?q=google+pinyin](http://chocolatey.org/packages?q=google+pinyin)），我只能自己为Google Pinyin创建一个Chocolatey的安装包。研究过C:\Chocolatey\lib\下面的7Zip的包文件后，我们可以获知创建Chocolatey包的方法。
+在我写这篇博客的时候，我的机器上并没有中文输入法。在Chocolatey上寻找未果后（[http://chocolatey.org/packages?q=google+pinyin](http://chocolatey.org/packages?q=google+pinyin)）（在你读到这篇Blog的时候，我已经上传了Google Pinyin的安装包），我只能自己为Google Pinyin创建一个Chocolatey的安装包。研究过C:\Chocolatey\lib\下面的7Zip的包文件后，我们可以获知创建Chocolatey包的方法。
 
 Chocoletay包一个满足特定目录结构的NuGet包。[NuGet](http://nuget.org/)是另一个Windows上令人心动的工具，它是一种特定的包格式，类似于.deb .rpm，同时它也具有版本化的包管理功能。与Chocolatey的不同在于，NuGet关注在开发人员使用的包，而Chocoletay更关注最终用户可用的软件包。既然Chocolatey包就是NuGet包，可以用命令
 
@@ -90,7 +89,7 @@ cpack.bat pack ****.nuspec
 try {
     Install-ChocolateyPackage 'google-pinyin' 'exe' '/s' 'http://dl.google.com/pinyin/v2/GooglePinyinInstaller.exe'
 } catch { 
-    Write-ChocolateyFailure 'reflector' "$($_.Exception.Message)"
+    Write-ChocolateyFailure 'Google Pinyin' "$($_.Exception.Message)"
 }
 {% endcodeblock %}
 
@@ -107,30 +106,14 @@ cpack google-pinyin.nuspec
 cinst googe-pinyin -source C:\GooglePinyinPackage
 {% endcodeblock %}
 
-其中，**-source C:\GooglePinyinPackage**非常重要，它将本地C:\GooglePinyinPackage目录设置为cinst的安装软件包源。如果没有这个参数，cinst会在默认的两个源中查找，而后抱怨找不到google-pinyin。cinst的两个默认源是[这里]()和[这里]()。
+其中，cinst是chocolatey install的快捷方式。**-source C:\GooglePinyinPackage**非常重要，它将本地C:\GooglePinyinPackage目录设置为cinst的安装软件包源。如果没有这个参数，cinst会在默认的两个源中查找，而后抱怨找不到google-pinyin。cinst的两个默认源是[这里](http://chocolatey.org/api/v2/)和[这里](http://chocolatey.org/api/v2/)。
 
 现在，安装应该结束了，可以看一看你的输入法列表中是否包含了Google拼音输入法。
 
 ## 4. 分享你的安装包 ##
 到目前为止，我们安装了两个包，7Zip和Google拼音输入法，一个来自于Chocolatey.org，一个是我自己创建的。Chocolatey.org实际上是个社区，鼓励大家分享不同人创建的安装包。这正是我钟爱Chocolatey的原因！那么，接下来我要把刚刚创建的安装包发布到Chocolatey社区中。
 
+发布安装包需要注册Chocolatey账户。注册完成后，可以在[这里](http://chocolatey.org/packages/upload)上传安装包。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+![上传Chocolatey安装包](/images/upload-chocolatey-package.png)
 
