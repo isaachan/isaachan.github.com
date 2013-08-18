@@ -17,11 +17,13 @@ Slideshow本身要求使用者编写scheme代码来创建幻灯片，不过这�
 
 #### 显示下一页预览 ####
 
-在幻灯片演示的过程中，按住Alt-c（或者Cmd-c）可以开启、关闭下一页幻灯片的预览。图一显示了启动预览时的效果。
+在幻灯片演示的过程中，按住Alt-c（或者Cmd-c）可以开启、关闭下一页幻灯片的预览。图1显示了启动预览时的效果。
+![下一页预览](/images/slide-textuality-tips/slideshow-preview.png)
+图1
 
 #### 显示注释 ####
 
-在幻灯片演示的过程中，按住Alt-d（或者Cmd-d）可以显示、隐藏注释内容。至于在幻灯片里添加注释的内容，需要comment函数，
+在幻灯片演示的过程中，按住Alt-d（或者Cmd-d）可以显示、隐藏注释内容。至于在幻灯片里添加注释的内容，需要调用comment函数，
 
 {% codeblock lang:scheme %}
 (slide
@@ -39,7 +41,9 @@ Slideshow本身要求使用者编写scheme代码来创建幻灯片，不过这�
 
 随着越来越多的办公软件与格式的流行，人们共享像幻灯片这类文件时兼容性问题越来越多，好在在很多时候，PDF是个几乎所有人都能接受的格式，于是，几乎所有办公软件都有导出PDF格式的功能。Slideshow也不例外。命令行参数"-p"可以告诉Slideshow不要演示幻灯片，而是打印它。打印前只要选择“Save as Pdf”，就可以到处文件，而不必真的执行打印了。
 
+{% codeblock lang:scheme %}
 > slideshow -p helloworld.rkt
+{% endcodeblock %}
 
 ## 2. 关于编码 ##
 
@@ -78,20 +82,26 @@ Slideshow本身要求使用者编写scheme代码来创建幻灯片，不过这�
 (title "Logic programming and Prolog")
 {% endcodeblock %}
 
+![title_1](/images/slide-textuality-tips/logic_programming_and_prolog.png)
+图2
+
 当然，如果title部分需要做一些定制，也没有问题：（图3）
 
-{% codeblock lang:scheme %} 
+{% codeblock lang:scheme %}
 (title
   (text "How to" (current-main-font) 50)
   (text " write your own language in 10 mins" (current-main-font) 50)
 )
 {% endcodeblock %}
 
+![title_2](/images/slide-textuality-tips/how_to_write_your_own_language_in_10_mins.png)
+图3
+
 #### 一页一句话 ####
 
 我们都知道一个演讲的基本原则，就是人是主题，幻灯片是辅助物，因此，应该尽量保持幻灯片简洁，不要密密麻麻地堆彻大量文字。这个原则的一个极限状态就是幻灯片上只有一句话，表明一个主题。我们希望让所有这些幻灯片里的文字都保持同样的样式。这只需一个非常简单的函数就足够了，
 
-{% codeblock lang:scheme %} 
+{% codeblock lang:scheme %}
 (define (topic content) 
   (slide (text content (current-main-font) 70))
 ) 
@@ -106,7 +116,7 @@ PowerPoint和Keynote都有模版功能，可以对所有的幻灯片做统一的
  1. 黑底白字
  2. Title内容靠左，不是默认的居中
 
-{% codeblock lang:scheme %} 
+{% codeblock lang:scheme %}
 (define black-bg
   (filled-rectangle client-w client-h)
 )
@@ -126,17 +136,24 @@ PowerPoint和Keynote都有模版功能，可以对所有的幻灯片做统一的
 (current-title-color "white")
 {% endcodeblock %}
 
-current-slide-assembler函数接受一个lambda类型的参数，这个lambda接受三个参数。black-bg函数会画一个和用户可见区域一样大小的黑色矩形——这就是“黑底”了。接下来将判断当前幻灯片是否有title，如果有，则将title和内容垂直左对齐；如果没有，则直接显示内容。注意，无论是否有Title，都会将文字的颜色改为白色。最后调用(current-title-color "white")，目的是把Title文字的颜色也改为白色。这就是“白字”了。下面的图４和图５是同样的幻灯片，在改变Master前后的效果，
+current-slide-assembler函数接受一个lambda类型的参数，这个lambda接受三个参数。black-bg函数会画一个和用户可见区域一样大小的黑色矩形——这就是“黑底”了。接下来将判断当前幻灯片是否有title，如果有，则将title和内容垂直左对齐；如果没有，则直接显示内容。注意，无论是否有Title，都会将文字的颜色改为白色。最后调用(current-title-color "white")，目的是把Title文字的颜色也改为白色。这就是“白字”了。下面的图4和图5是同样的幻灯片，在改变Master前后的效果，
 
-图４　图５
+![改变Master之前](/images/slide-textuality-tips/change-master-1.png)
+图4　
+
+![改变Master之后](/images/slide-textuality-tips/change-master-2.png)
+图5
 
 #### 布局 ####
 
-有很多时候，我需要对幻灯片进行布局，比如图６示范了一些可能的形式，
+有很多时候，我需要对幻灯片进行布局，比如图6示范了一些可能的形式:
+
+![布局效果](/images/slide-textuality-tips/left-right.png)
+图6
 
 在Slideshow中实现第一种左右平分的布局非常简单，
 
-{% codeblock lang:scheme %} 
+{% codeblock lang:scheme %}
 (define left-right-panel
   (lambda (left right)
     (slide
@@ -151,7 +168,7 @@ current-slide-assembler函数接受一个lambda类型的参数，这个lambda接
 
 left-right-panel函数接受两个参数，分别是左边和右边的内容。因此，
 
-{% codeblock lang:scheme %} 
+{% codeblock lang:scheme %}
 (left-right-panel (t "Hello") (t "World"))
 {% endcodeblock %}
 
@@ -160,7 +177,7 @@ left-right-panel函数接受两个参数，分别是左边和右边的内容。�
 {% codeblock lang:scheme %}
 (define left-right-panel
   (lambda (left right [left-superimpose cc-superimpose] [right-superimpose cc-superimpose])
-    (slide
+      (slide
       (ht-append
         (left-superimpose (blank (/ client-w 2) client-h) left)
         (right-superimpose (blank (/ client-w 2) client-h) right)
@@ -172,7 +189,7 @@ left-right-panel函数接受两个参数，分别是左边和右边的内容。�
 
 更新后的left-right-panel增加了两个参数left-superimpose和right-superimpose，并且默认值为cc-superimpose和cc-superimpose。如果要实现图6-b的效果，可以调用
 
-{% codeblock lang:scheme %} 
+{% codeblock lang:scheme %}
 (left-right-panel (t "Hello") (t "World") lt-superimpose rt-superimpose)
 {% endcodeblock %}
 

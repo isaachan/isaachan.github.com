@@ -20,6 +20,7 @@ categories:
 
 (slide (t “Hello World”))
 {% endcodeblock %}
+<!-- more -->
 
 第一行代码注册了语言的类型，即slideshow，第二行代码包含一个slide函数的调用，它会产生一张幻灯片，幻灯片的内容是(t “Hello World”)函数的结果——包含字符串“Hello World”的pict。t是Slideshow中众多返回pict的函数之一。在默认情况下，slide函数会把pict置于幻灯片的中间，不过它有一个可选的选项layout来控制pict的位置，让我们在刚才的基础上再增加一张幻灯片：
 
