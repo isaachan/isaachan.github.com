@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>幻灯片文本化 - To iterate is human, to recurse divine.</title>
+  <title>文本化的幻灯片 - Slideshow - To iterate is human, to recurse divine.</title>
   <meta name="author" content="">
 
   
@@ -77,7 +77,7 @@
   
   <header>
     
-      <h1 class="entry-title">幻灯片文本化</h1>
+      <h1 class="entry-title">文本化的幻灯片 - Slideshow</h1>
     
     
       <p class="meta">
@@ -102,9 +102,9 @@
 
 <div class="entry-content"><p>作为一名体面的程序员，作为一名被Unix文化侵染的程序员，作为一名希望世界是由简单的纯文本构成的程序员，生活中充满太多无奈。二进制的格式无处不在，后缀名将文件分出了三六九等。这其中，有两种文件我最无奈，图像和幻灯片，它们总和我的工作生活密切相关。</p>
 
-<p>不过，现在光来了！Kukai在一篇blog里介绍了一个很酷的工具——Dot，它提供了一种可以基于文本描述图形的简洁的DSL。利用这个DSL，可以绘制出相当复杂的图案。激动之余，我开始寻找文本化幻灯片的方法。于是，我发现了DrRacket（它的前身就是大名鼎鼎的DrScheme）。DrRacket是MIT开发的Scheme的运行时，其中包含一个制作幻灯片的组件，名曰Slideshow。</p>
+<p>不过，现在光来了！HuKai在一篇<a href="http://www.iamhukai.com/?p=149">blog</a>里介绍了一个很酷的工具——Dot，它提供了一种可以基于文本描述图形的简洁的DSL。利用这个DSL，可以绘制出相当复杂的图案。激动之余，我开始寻找文本化幻灯片的方法。于是，我发现了DrRacket（它的前身就是大名鼎鼎的DrScheme）。DrRacket是MIT开发的Scheme的运行时，其中包含一个制作幻灯片的组件，名曰Slideshow。</p>
 
-<p>很明显，Slideshow要求使用者用scheme来编写幻灯片，这就满足了像我这样的语言控的怪癖。我也因此放弃了一些其他类似的工具，比如SliTex。在Slideshow中，最核心的概念是pict和slide。slide自然表示一张幻灯片，它是由一个或多个pict按照不同的顺序排列组成的。slideshow的源代码以rkt为后缀名。下面是slideshow的Hello World（hello.rkt）：</p>
+<p>很明显，Slideshow要求使用者用scheme来编写幻灯片，这就满足了像我这样的语言控的怪癖。我也因此放弃了一些其他类似的工具，比如SliTex。在Slideshow中，最核心的概念是pict和slide。slide自然表示一张幻灯片，它是由一个或多个pict按照不同的顺序排列组成的。slideshow的源代码以rkt为后缀名。下面是Slideshow的Hello World（hello.rkt）：</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -113,6 +113,11 @@
 </span><span class='line'>
 </span><span class='line'><span class="p">(</span><span class="nf">slide</span> <span class="p">(</span><span class="nf">t</span> <span class="err">“</span><span class="nv">Hello</span> <span class="nv">World</span><span class="err">”</span><span class="p">))</span>
 </span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<!-- more -->
 
 
 <p>第一行代码注册了语言的类型，即slideshow，第二行代码包含一个slide函数的调用，它会产生一张幻灯片，幻灯片的内容是(t “Hello World”)函数的结果——包含字符串“Hello World”的pict。t是Slideshow中众多返回pict的函数之一。在默认情况下，slide函数会把pict置于幻灯片的中间，不过它有一个可选的选项layout来控制pict的位置，让我们在刚才的基础上再增加一张幻灯片：</p>
@@ -187,7 +192,7 @@
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/scheme/'>scheme</a>, <a class='category' href='/blog/categories/slideshow/'>slideshow</a>, <a class='category' href='/blog/categories/textuality/'>textuality</a>
+    <a class='category' href='/blog/categories/racket/'>racket</a>, <a class='category' href='/blog/categories/scheme/'>scheme</a>, <a class='category' href='/blog/categories/slideshow/'>slideshow</a>, <a class='category' href='/blog/categories/textuality/'>textuality</a>
   
 </span>
 
@@ -205,6 +210,8 @@
       
         <a class="basic-alignment left" href="/blog/2013/02/07/chocolatey-i-love-you/" title="Previous Post: Chocolatey, 我爱你">&laquo; Chocolatey, 我爱你</a>
       
+      
+        <a class="basic-alignment right" href="/blog/2013/08/18/slide-textuality-tips/" title="next Post: 文本化的幻灯片 - 实用技术">文本化的幻灯片 - 实用技术 &raquo;</a>
       
     </p>
   </footer>

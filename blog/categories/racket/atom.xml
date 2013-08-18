@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: slideshow | To iterate is human, to recurse divine.]]></title>
-  <link href="http://isaachan.github.com/blog/categories/slideshow/atom.xml" rel="self"/>
+  <title><![CDATA[Category: racket | To iterate is human, to recurse divine.]]></title>
+  <link href="http://isaachan.github.com/blog/categories/racket/atom.xml" rel="self"/>
   <link href="http://isaachan.github.com/"/>
   <updated>2013-08-18T22:55:55+08:00</updated>
   <id>http://isaachan.github.com/</id>
