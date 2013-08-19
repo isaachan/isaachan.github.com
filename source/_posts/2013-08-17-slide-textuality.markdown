@@ -1,19 +1,20 @@
 ---
 layout: post
-title: "幻灯片文本化"
+title: "文本化的幻灯片 - Slideshow"
 date: 2013-08-17 22:12
 comments: true
 categories: 
   - scheme
   - slideshow
   - textuality
+  - racket
 ---
 
 作为一名体面的程序员，作为一名被Unix文化侵染的程序员，作为一名希望世界是由简单的纯文本构成的程序员，生活中充满太多无奈。二进制的格式无处不在，后缀名将文件分出了三六九等。这其中，有两种文件我最无奈，图像和幻灯片，它们总和我的工作生活密切相关。
 
-不过，现在光来了！Kukai在一篇blog里介绍了一个很酷的工具——Dot，它提供了一种可以基于文本描述图形的简洁的DSL。利用这个DSL，可以绘制出相当复杂的图案。激动之余，我开始寻找文本化幻灯片的方法。于是，我发现了DrRacket（它的前身就是大名鼎鼎的DrScheme）。DrRacket是MIT开发的Scheme的运行时，其中包含一个制作幻灯片的组件，名曰Slideshow。
+不过，现在光来了！HuKai在一篇[blog](http://www.iamhukai.com/?p=149)里介绍了一个很酷的工具——Dot，它提供了一种可以基于文本描述图形的简洁的DSL。利用这个DSL，可以绘制出相当复杂的图案。激动之余，我开始寻找文本化幻灯片的方法。于是，我发现了DrRacket（它的前身就是大名鼎鼎的DrScheme）。DrRacket是MIT开发的Scheme的运行时，其中包含一个制作幻灯片的组件，名曰Slideshow。
 
-很明显，Slideshow要求使用者用scheme来编写幻灯片，这就满足了像我这样的语言控的怪癖。我也因此放弃了一些其他类似的工具，比如SliTex。在Slideshow中，最核心的概念是pict和slide。slide自然表示一张幻灯片，它是由一个或多个pict按照不同的顺序排列组成的。slideshow的源代码以rkt为后缀名。下面是slideshow的Hello World（hello.rkt）：
+很明显，Slideshow要求使用者用scheme来编写幻灯片，这就满足了像我这样的语言控的怪癖。我也因此放弃了一些其他类似的工具，比如SliTex。在Slideshow中，最核心的概念是pict和slide。slide自然表示一张幻灯片，它是由一个或多个pict按照不同的顺序排列组成的。slideshow的源代码以rkt为后缀名。下面是Slideshow的Hello World（hello.rkt）：
 
 {% codeblock lang:scheme %}
 #lang slideshow 
@@ -57,5 +58,4 @@ layout的值包括'center，'top，'tall和'auto，'auto是默认值。slide还�
 就立刻能够看到一个介绍Slideshow入门教程幻灯片，它非常给力，而且它就是用Slideshow制作的，你可以在drrakect的安装目录下找到它的源代码。
 
 希望你能花点儿时间学习一下Slideshow，然后从此爱上幻灯片，爱上Scheme！
-
 

@@ -1,15 +1,16 @@
 ---
 layout: post
-title: "幻灯片文本化 - 实用技术"
+title: "文本化的幻灯片 - 实用技术"
 date: 2013-08-18 21:56
 comments: true
 categories: 
   - scheme
   - slideshow
   - textuality
+  - racket
 ---
 
-不久前在博客上发了“幻灯片文本化”这篇博文，不过这篇博文却是在两年多前写的。这两年多里，我在公司内部的演讲幻灯片几乎都是用Slideshow做的，外部演讲也用过几次了，比如[Lisp社区的](http://www.lisp.org.cn/wiki/lisp/event/2013-meetup)。在这个过程中，我对Slideshow的强大功能与高效率越来越有信心了。这篇文章分享一些我总结的经验。
+不久前在博客上发了一篇使用Slideshow创建幻灯片的[文章](http://isaachan.github.io/blog/2013/08/17/slide-textuality/)，不过这篇博文却是在两年多前写的。这两年多里，我在公司内部的演讲幻灯片几乎都是用Slideshow做的，外部演讲也用过几次了，比如[Lisp社区的](http://www.lisp.org.cn/wiki/lisp/event/2013-meetup)。在这个过程中，我对Slideshow的强大功能与高效率越来越有信心了。这篇文章分享一些我总结的经验。
 
 ## 1. 关于使用 ##
 
@@ -117,6 +118,7 @@ PowerPoint和Keynote都有模版功能，可以对所有的幻灯片做统一的
  2. Title内容靠左，不是默认的居中
 
 {% codeblock lang:scheme %}
+(set-margin! 0)
 (define black-bg
   (filled-rectangle client-w client-h)
 )
