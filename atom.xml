@@ -4,7 +4,7 @@
   <title><![CDATA[To iterate is human, to recurse divine.]]></title>
   <link href="http://isaachan.github.com/atom.xml" rel="self"/>
   <link href="http://isaachan.github.com/"/>
-  <updated>2013-08-18T22:55:54+08:00</updated>
+  <updated>2013-08-20T07:59:05+08:00</updated>
   <id>http://isaachan.github.com/</id>
   <author>
     <name><![CDATA[]]></name>
@@ -182,7 +182,9 @@
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
 <span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="k">define </span><span class="nv">black-bg</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="nf">set-margin!</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="k">define </span><span class="nv">black-bg</span>
 </span><span class='line'>  <span class="p">(</span><span class="nf">filled-rectangle</span> <span class="nv">client-w</span> <span class="nv">client-h</span><span class="p">)</span>
 </span><span class='line'><span class="p">)</span>
 </span><span class='line'>

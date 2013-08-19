@@ -4,7 +4,7 @@
   <title><![CDATA[Category: slideshow | To iterate is human, to recurse divine.]]></title>
   <link href="http://isaachan.github.com/blog/categories/slideshow/atom.xml" rel="self"/>
   <link href="http://isaachan.github.com/"/>
-  <updated>2013-08-18T22:55:55+08:00</updated>
+  <updated>2013-08-20T07:59:05+08:00</updated>
   <id>http://isaachan.github.com/</id>
   <author>
     <name><![CDATA[]]></name>
@@ -34,15 +34,21 @@
 
 <p>在幻灯片演示的过程中，按住Alt-d（或者Cmd-d）可以显示、隐藏注释内容。至于在幻灯片里添加注释的内容，需要调用comment函数，</p>
 
-<p>{% codeblock lang:scheme %}
-(slide</p>
-
-<pre><code>(t "Hello World!")
-(comment "this is a comment")
-</code></pre>
-
-<p>)
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="nf">slide&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">&lt;pre&gt;&lt;code&gt;</span><span class="p">(</span><span class="nf">t</span> <span class="s">&quot;Hello World!&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="nf">comment</span> <span class="s">&quot;this is a comment&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="nv">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">&lt;p&gt;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <!-- more -->
 
@@ -55,10 +61,13 @@
 
 <p>随着越来越多的办公软件与格式的流行，人们共享像幻灯片这类文件时兼容性问题越来越多，好在在很多时候，PDF是个几乎所有人都能接受的格式，于是，几乎所有办公软件都有导出PDF格式的功能。Slideshow也不例外。命令行参数"-p"可以告诉Slideshow不要演示幻灯片，而是打印它。打印前只要选择“Save as Pdf”，就可以到处文件，而不必真的执行打印了。</p>
 
-<p>{% codeblock lang:scheme %}</p>
-
-<blockquote><p>slideshow -p helloworld.rkt
-{% endcodeblock %}</p></blockquote>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">&lt;blockquote&gt;&lt;p&gt;slideshow</span> <span class="nv">-p</span> <span class="nv">helloworld</span><span class="o">.</span><span class="nv">rkt</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p></blockquote>
 
 <h2>2. 关于编码</h2>
 
@@ -68,49 +77,74 @@
 
 <p>你的幻灯片第一页怎么做？演讲题目、演讲者姓名、公司、邮箱、微博、主页等等。然后排版，标题居中、名字靠右，还是...其实对于你自己来说，每次的不同只有演讲题目而已，其他的像公司、邮箱、样式等等都可以是一样的，这样能够打造你自己一致的风格。而提取相同的部分，隔离不同的部分——幻灯片已经全部变成代码了——当然可以做到：</p>
 
-<p>{% codeblock lang:scheme %}
-(define title
-  (lambda content</p>
-
-<pre><code>(slide (vr-append (* gap-size 5)
-         (vc-append
-           (* gap-size 3)
-           (adapt content)           
-         )
-         (vr-append (* gap-size 0.5)
-            (text "Han Kai" (cons 'bold (current-main-font)) 32)
-            (text "http://isaachan.github.com" (current-main-font) 24)
-            (hc-append
-              (text "Thought" (cons 'bold (current-main-font)) 24)
-              (text "Works" (current-main-font) 24)
-            )
-            (text "@isaachan" (cons 'bold (current-main-font)) 32)
-         )
-    )
-)
-</code></pre>
-
-<p>  )
-)
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="k">define </span><span class="nv">title</span>
+</span><span class='line'>  <span class="p">(</span><span class="k">lambda </span><span class="nv">content&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">&lt;pre&gt;&lt;code&gt;</span><span class="p">(</span><span class="nf">slide</span> <span class="p">(</span><span class="nf">vr-append</span> <span class="p">(</span><span class="nb">* </span><span class="nv">gap-size</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'>         <span class="p">(</span><span class="nf">vc-append</span>
+</span><span class='line'>           <span class="p">(</span><span class="nb">* </span><span class="nv">gap-size</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class='line'>           <span class="p">(</span><span class="nf">adapt</span> <span class="nv">content</span><span class="p">)</span>
+</span><span class='line'>         <span class="p">)</span>
+</span><span class='line'>         <span class="p">(</span><span class="nf">vr-append</span> <span class="p">(</span><span class="nb">* </span><span class="nv">gap-size</span> <span class="mf">0.5</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">(</span><span class="nf">text</span> <span class="s">&quot;Han Kai&quot;</span> <span class="p">(</span><span class="nb">cons </span><span class="ss">&#39;bold</span> <span class="p">(</span><span class="nf">current-main-font</span><span class="p">))</span> <span class="mi">32</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">(</span><span class="nf">text</span> <span class="s">&quot;http://isaachan.github.com&quot;</span> <span class="p">(</span><span class="nf">current-main-font</span><span class="p">)</span> <span class="mi">24</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">(</span><span class="nf">hc-append</span>
+</span><span class='line'>              <span class="p">(</span><span class="nf">text</span> <span class="s">&quot;Thought&quot;</span> <span class="p">(</span><span class="nb">cons </span><span class="ss">&#39;bold</span> <span class="p">(</span><span class="nf">current-main-font</span><span class="p">))</span> <span class="mi">24</span><span class="p">)</span>
+</span><span class='line'>              <span class="p">(</span><span class="nf">text</span> <span class="s">&quot;Works&quot;</span> <span class="p">(</span><span class="nf">current-main-font</span><span class="p">)</span> <span class="mi">24</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">)</span>
+</span><span class='line'>            <span class="p">(</span><span class="nf">text</span> <span class="s">&quot;@isaachan&quot;</span> <span class="p">(</span><span class="nb">cons </span><span class="ss">&#39;bold</span> <span class="p">(</span><span class="nf">current-main-font</span><span class="p">))</span> <span class="mi">32</span><span class="p">)</span>
+</span><span class='line'>         <span class="p">)</span>
+</span><span class='line'>    <span class="p">)</span>
+</span><span class='line'><span class="p">)</span>
+</span><span class='line'><span class="nv">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">&lt;p&gt;</span>  <span class="p">)</span>
+</span><span class='line'><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>这段代码定义了title函数，它接受一个字符串类型的参数，即演讲题目内容，然后将题目以64号字居中显示，右下角以此是演讲名姓名、Blog主页、公司名和微博。那么，当用不同参数调用title函数时，可以看到风格一致、只有题目不同的幻灯片了：（图2）</p>
 
-<p>{% codeblock lang:scheme %}
-(title "Logic programming and Prolog")
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="nf">title</span> <span class="s">&quot;Logic programming and Prolog&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p><img src="/images/slide-textuality-tips/logic_programming_and_prolog.png" alt="title_1" />
 图2</p>
 
 <p>当然，如果title部分需要做一些定制，也没有问题：（图3）</p>
 
-<p>{% codeblock lang:scheme %}
-(title
-  (text "How to" (current-main-font) 50)
-  (text " write your own language in 10 mins" (current-main-font) 50)
-)
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="nf">title</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">text</span> <span class="s">&quot;How to&quot;</span> <span class="p">(</span><span class="nf">current-main-font</span><span class="p">)</span> <span class="mi">50</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">text</span> <span class="s">&quot; write your own language in 10 mins&quot;</span> <span class="p">(</span><span class="nf">current-main-font</span><span class="p">)</span> <span class="mi">50</span><span class="p">)</span>
+</span><span class='line'><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p><img src="/images/slide-textuality-tips/how_to_write_your_own_language_in_10_mins.png" alt="title_2" />
 图3</p>
@@ -119,11 +153,13 @@
 
 <p>我们都知道一个演讲的基本原则，就是人是主题，幻灯片是辅助物，因此，应该尽量保持幻灯片简洁，不要密密麻麻地堆彻大量文字。这个原则的一个极限状态就是幻灯片上只有一句话，表明一个主题。我们希望让所有这些幻灯片里的文字都保持同样的样式。这只需一个非常简单的函数就足够了，</p>
 
-<p>{% codeblock lang:scheme %}
-(define (topic content)
-  (slide (text content (current-main-font) 70))
-)
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="k">define </span><span class="p">(</span><span class="nf">topic</span> <span class="nv">content</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">slide</span> <span class="p">(</span><span class="nf">text</span> <span class="nv">content</span> <span class="p">(</span><span class="nf">current-main-font</span><span class="p">)</span> <span class="mi">70</span><span class="p">))</span>
+</span><span class='line'><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>这个函数只接受一个字符串类型的参数，为显示在幻灯片上的文字内容。另外它将字号设置为70，使用的是系统默认的字体。</p>
 
@@ -137,28 +173,49 @@
 </ol>
 
 
-<p>{% codeblock lang:scheme %}
-(define black-bg
-  (filled-rectangle client-w client-h)
-)</p>
-
-<p>(current-slide-assembler
-  (lambda (s v-sep c)</p>
-
-<pre><code>(ct-superimpose
-  black-bg
-  (if s
-    (vl-append v-sep (para (titlet s)) (colorize c "white"))
-    (colorize c "white")  
-  )
-)
-</code></pre>
-
-<p>  )
-)</p>
-
-<p>(current-title-color "white")
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="nf">set-margin!</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="k">define </span><span class="nv">black-bg</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">filled-rectangle</span> <span class="nv">client-w</span> <span class="nv">client-h</span><span class="p">)</span>
+</span><span class='line'><span class="p">)</span><span class="nv">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">&lt;p&gt;</span><span class="p">(</span><span class="nf">current-slide-assembler</span>
+</span><span class='line'>  <span class="p">(</span><span class="k">lambda </span><span class="p">(</span><span class="nf">s</span> <span class="nv">v-sep</span> <span class="nv">c</span><span class="p">)</span><span class="nv">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">&lt;pre&gt;&lt;code&gt;</span><span class="p">(</span><span class="nf">ct-superimpose</span>
+</span><span class='line'>  <span class="nv">black-bg</span>
+</span><span class='line'>  <span class="p">(</span><span class="k">if </span><span class="nv">s</span>
+</span><span class='line'>    <span class="p">(</span><span class="nf">vl-append</span> <span class="nv">v-sep</span> <span class="p">(</span><span class="nf">para</span> <span class="p">(</span><span class="nf">titlet</span> <span class="nv">s</span><span class="p">))</span> <span class="p">(</span><span class="nf">colorize</span> <span class="nv">c</span> <span class="s">&quot;white&quot;</span><span class="p">))</span>
+</span><span class='line'>    <span class="p">(</span><span class="nf">colorize</span> <span class="nv">c</span> <span class="s">&quot;white&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">)</span>
+</span><span class='line'><span class="p">)</span>
+</span><span class='line'><span class="nv">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">&lt;p&gt;</span>  <span class="p">)</span>
+</span><span class='line'><span class="p">)</span><span class="nv">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">&lt;p&gt;</span><span class="p">(</span><span class="nf">current-title-color</span> <span class="s">&quot;white&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>current-slide-assembler函数接受一个lambda类型的参数，这个lambda接受三个参数。black-bg函数会画一个和用户可见区域一样大小的黑色矩形——这就是“黑底”了。接下来将判断当前幻灯片是否有title，如果有，则将title和内容垂直左对齐；如果没有，则直接显示内容。注意，无论是否有Title，都会将文字的颜色改为白色。最后调用(current-title-color "white")，目的是把Title文字的颜色也改为白色。这就是“白字”了。下面的图4和图5是同样的幻灯片，在改变Master前后的效果，</p>
 
@@ -177,51 +234,75 @@
 
 <p>在Slideshow中实现第一种左右平分的布局非常简单，</p>
 
-<p>{% codeblock lang:scheme %}
-(define left-right-panel
-  (lambda (left right)</p>
-
-<pre><code>(slide
-  (ht-append
-    (cc-superimpose (blank (/ client-w 2) client-h) left)
-    (cc-superimpose (blank (/ client-w 2) client-h) right)
-  )
-)
-</code></pre>
-
-<p>  )
-)
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="k">define </span><span class="nv">left-right-panel</span>
+</span><span class='line'>  <span class="p">(</span><span class="k">lambda </span><span class="p">(</span><span class="nf">left</span> <span class="nv">right</span><span class="p">)</span><span class="nv">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">&lt;pre&gt;&lt;code&gt;</span><span class="p">(</span><span class="nf">slide</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">ht-append</span>
+</span><span class='line'>    <span class="p">(</span><span class="nf">cc-superimpose</span> <span class="p">(</span><span class="nf">blank</span> <span class="p">(</span><span class="nb">/ </span><span class="nv">client-w</span> <span class="mi">2</span><span class="p">)</span> <span class="nv">client-h</span><span class="p">)</span> <span class="nv">left</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">(</span><span class="nf">cc-superimpose</span> <span class="p">(</span><span class="nf">blank</span> <span class="p">(</span><span class="nb">/ </span><span class="nv">client-w</span> <span class="mi">2</span><span class="p">)</span> <span class="nv">client-h</span><span class="p">)</span> <span class="nv">right</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">)</span>
+</span><span class='line'><span class="p">)</span>
+</span><span class='line'><span class="nv">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">&lt;p&gt;</span>  <span class="p">)</span>
+</span><span class='line'><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>left-right-panel函数接受两个参数，分别是左边和右边的内容。因此，</p>
 
-<p>{% codeblock lang:scheme %}
-(left-right-panel (t "Hello") (t "World"))
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="nf">left-right-panel</span> <span class="p">(</span><span class="nf">t</span> <span class="s">&quot;Hello&quot;</span><span class="p">)</span> <span class="p">(</span><span class="nf">t</span> <span class="s">&quot;World&quot;</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>就能实现图6-a的效果了。其中cc-superimpose表示“Hello”和“World”两段文本在各自的区域里面都出于水平居中、垂直居中的位置（cc）。不过，这个函数限制了内容只能在各自的区域内居中，因此无法实现像图6-b那种效果，只是可以修改left-right-panel，使它能够支持不同的居中模式，</p>
 
-<p>{% codeblock lang:scheme %}
-(define left-right-panel
-  (lambda (left right [left-superimpose cc-superimpose] [right-superimpose cc-superimpose])</p>
-
-<pre><code>  (slide
-  (ht-append
-    (left-superimpose (blank (/ client-w 2) client-h) left)
-    (right-superimpose (blank (/ client-w 2) client-h) right)
-  )
-)
-</code></pre>
-
-<p>  )
-)
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="k">define </span><span class="nv">left-right-panel</span>
+</span><span class='line'>  <span class="p">(</span><span class="k">lambda </span><span class="p">(</span><span class="nf">left</span> <span class="nv">right</span> <span class="p">[</span><span class="nv">left-superimpose</span> <span class="nv">cc-superimpose</span><span class="p">]</span> <span class="p">[</span><span class="nv">right-superimpose</span> <span class="nv">cc-superimpose</span><span class="p">])</span><span class="nv">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">&lt;pre&gt;&lt;code&gt;</span>  <span class="p">(</span><span class="nf">slide</span>
+</span><span class='line'>  <span class="p">(</span><span class="nf">ht-append</span>
+</span><span class='line'>    <span class="p">(</span><span class="nf">left-superimpose</span> <span class="p">(</span><span class="nf">blank</span> <span class="p">(</span><span class="nb">/ </span><span class="nv">client-w</span> <span class="mi">2</span><span class="p">)</span> <span class="nv">client-h</span><span class="p">)</span> <span class="nv">left</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">(</span><span class="nf">right-superimpose</span> <span class="p">(</span><span class="nf">blank</span> <span class="p">(</span><span class="nb">/ </span><span class="nv">client-w</span> <span class="mi">2</span><span class="p">)</span> <span class="nv">client-h</span><span class="p">)</span> <span class="nv">right</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">)</span>
+</span><span class='line'><span class="p">)</span>
+</span><span class='line'><span class="nv">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">&lt;p&gt;</span>  <span class="p">)</span>
+</span><span class='line'><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>更新后的left-right-panel增加了两个参数left-superimpose和right-superimpose，并且默认值为cc-superimpose和cc-superimpose。如果要实现图6-b的效果，可以调用</p>
 
-<p>{% codeblock lang:scheme %}
-(left-right-panel (t "Hello") (t "World") lt-superimpose rt-superimpose)
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="nf">left-right-panel</span> <span class="p">(</span><span class="nf">t</span> <span class="s">&quot;Hello&quot;</span><span class="p">)</span> <span class="p">(</span><span class="nf">t</span> <span class="s">&quot;World&quot;</span><span class="p">)</span> <span class="nv">lt-superimpose</span> <span class="nv">rt-superimpose</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>就可以了。另外，图6的其他几种布局的实现方式和left-right-panel非常类似。</p>
 
@@ -242,49 +323,66 @@
 
 <p>很明显，Slideshow要求使用者用scheme来编写幻灯片，这就满足了像我这样的语言控的怪癖。我也因此放弃了一些其他类似的工具，比如SliTex。在Slideshow中，最核心的概念是pict和slide。slide自然表示一张幻灯片，它是由一个或多个pict按照不同的顺序排列组成的。slideshow的源代码以rkt为后缀名。下面是Slideshow的Hello World（hello.rkt）：</p>
 
-<p>{% codeblock lang:scheme %}</p>
-
-<h1>lang slideshow</h1>
-
-<p>(slide (t “Hello World”))
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">&lt;h1&gt;lang</span> <span class="nv">slideshow&lt;/h1&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">&lt;p&gt;</span><span class="p">(</span><span class="nf">slide</span> <span class="p">(</span><span class="nf">t</span> <span class="err">“</span><span class="nv">Hello</span> <span class="nv">World</span><span class="err">”</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <!-- more -->
 
 
 <p>第一行代码注册了语言的类型，即slideshow，第二行代码包含一个slide函数的调用，它会产生一张幻灯片，幻灯片的内容是(t “Hello World”)函数的结果——包含字符串“Hello World”的pict。t是Slideshow中众多返回pict的函数之一。在默认情况下，slide函数会把pict置于幻灯片的中间，不过它有一个可选的选项layout来控制pict的位置，让我们在刚才的基础上再增加一张幻灯片：</p>
 
-<p>{% codeblock lang:scheme %}
-…
-(slide
-   #:layout 'top
-   (t “Hello World”))
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="err">…</span>
+</span><span class='line'><span class="p">(</span><span class="nf">slide</span>
+</span><span class='line'>   <span class="o">#</span><span class="nv">:layout</span> <span class="ss">&#39;top</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">t</span> <span class="err">“</span><span class="nv">Hello</span> <span class="nv">World</span><span class="err">”</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>layout的值包括'center，'top，'tall和'auto，'auto是默认值。slide还有其他选项，title、name、inset和timeout等，可以为slide提供更多可配置的功能。</p>
 
 <p>如果你对t函数使用的字体和大小不满意的话，可以使用text函数来自定义它们。</p>
 
-<p>{% codeblock lang:scheme %}
-…
-(slide
-   #:title “Code Snap”
-   (text “String name = getNameFromDB();” '(bold . morden), (+ (current-font-size 10))))
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="err">…</span>
+</span><span class='line'><span class="p">(</span><span class="nf">slide</span>
+</span><span class='line'>   <span class="o">#</span><span class="nv">:title</span> <span class="err">“</span><span class="nv">Code</span> <span class="nv">Snap</span><span class="err">”</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">text</span> <span class="err">“</span><span class="nv">String</span> <span class="nv">name</span> <span class="nv">=</span> <span class="nv">getNameFromDB</span><span class="p">()</span><span class="c1">;” &#39;(bold . morden), (+ (current-font-size 10))))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>我为这张幻灯片增加了title “Code Snap”，它会出现在幻灯片的顶端。然后使用text函数生成一段Java代码片段，为了让它看上去更像“代码”，使用等宽字体morden并加粗，大小也比默认字号大了10。这时在命令行里键入下面的命令</p>
 
-<p>{% codeblock lang:bash %}</p>
-
-<blockquote><p>slideshow hello.rkt
-{% endcodeblock %}</p></blockquote>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;blockquote&gt;&lt;p&gt;slideshow hello.rkt
+</span></code></pre></td></tr></table></div></figure></notextile></div></p></blockquote>
 
 <p>就能看到前面制作的三张幻灯片依次播放了。如果你现在对Slideshow产生了一点兴趣，那么别犹豫了，在命令行里输入</p>
 
-<p>{% codeblock lang:bash %}</p>
-
-<blockquote><p>slideshow
-{% endcodeblock %}</p></blockquote>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;blockquote&gt;&lt;p&gt;slideshow
+</span></code></pre></td></tr></table></div></figure></notextile></div></p></blockquote>
 
 <p>就立刻能够看到一个介绍Slideshow入门教程幻灯片，它非常给力，而且它就是用Slideshow制作的，你可以在drrakect的安装目录下找到它的源代码。</p>
 
