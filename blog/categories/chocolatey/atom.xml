@@ -4,7 +4,7 @@
   <title><![CDATA[Category: chocolatey | To iterate is human, to recurse divine.]]></title>
   <link href="http://isaachan.github.com/blog/categories/chocolatey/atom.xml" rel="self"/>
   <link href="http://isaachan.github.com/"/>
-  <updated>2013-08-20T07:59:05+08:00</updated>
+  <updated>2013-08-20T08:01:29+08:00</updated>
   <id>http://isaachan.github.com/</id>
   <author>
     <name><![CDATA[]]></name>
@@ -23,9 +23,9 @@
 <h2>1. 安装</h2>
 
 <p>Chocolatey的安装过程简单至极，在<a href="http://chocolatey.org/">Chocolatey.org</a>上最醒目的地方有一行命令，把它复制到命令行中运行，只要一分钟左右，安装就完成了。在命令下键入
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='powershell'><span class='line'><span class="n">chocolatey</span> <span class="n">help</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:powershell %}
+chocolatey help
+{% endcodeblock %}</p>
 
 <p>可以验证安装是否成功。</p>
 
@@ -45,14 +45,15 @@
 
 <p>是时候尝试一下Chocolatey的威力了，在命令行上键入</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='powershell'><span class='line'><span class="n">chocolatey</span> <span class="n">install</span> <span class="n">7zip</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>{% codeblock lang:powershell %}
+chocolatey install 7zip
+{% endcodeblock %}</p>
 
 <p>此时会出现下载的进度信息。耐心等一会儿，Chocolatey会告诉你安装完成。</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>“Finished installing '7zip' and dependencies - if errors not shown in console, none detected. Check log for errors if unsure”</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>{% codeblock %}
+“Finished installing '7zip' and dependencies - if errors not shown in console, none detected. Check log for errors if unsure”
+{% endcodeblock %}</p>
 
 <p>这之后检查你的Program Files(或者Program Files (x86))下应该包含7-Zip目录了。</p>
 
@@ -62,101 +63,72 @@
 
 <p>Chocoletay包一个满足特定目录结构的NuGet包。<a href="http://nuget.org/">NuGet</a>是另一个Windows上令人心动的工具，它是一种特定的包格式，类似于.deb .rpm，同时它也具有版本化的包管理功能。与Chocolatey的不同在于，NuGet关注在开发人员使用的包，而Chocoletay更关注最终用户可用的软件包。既然Chocolatey包就是NuGet包，可以用命令</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='powershell'><span class='line'><span class="n">NuGet</span><span class="p">.</span><span class="n">exe</span> <span class="n">pack</span> <span class="p">****.</span><span class="n">nuspec</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>{% codeblock lang:powershell %}
+NuGet.exe pack ****.nuspec
+{% endcodeblock %}</p>
 
 <p>创建。如果你没有安装NuGet没有关系，Chocolatey包含了一个NuGet的二进制执行文件，可以使用命令</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='powershell'><span class='line'><span class="n">cpack</span><span class="p">.</span><span class="n">bat</span> <span class="n">pack</span> <span class="p">****.</span><span class="n">nuspec</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>{% codeblock lang:powershell %}
+cpack.bat pack ****.nuspec
+{% endcodeblock %}</p>
 
 <p>创建。cpack.bat可在C:\Chocolatey\bin目录下找到。</p>
 
 <p>不过Chocolatey的包还需要一些特殊的内容，才能被Chocolatey识别并安装。查看7Zip的安装文件后，可以看到我们需要在包的顶级目录下创建一个tools目录，并在下面包含一个chocolateyInstall.ps1文件，该文件是安装包的（PowerShell）代码。 综上所述，我们需要很少的步骤，就能创建Google Pinyin的包：</p>
 
 <p>--- C:/GooglePinyinPackage/google-pinyin.nuspec ---
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="ni">&amp;lt;</span>?xml version=&quot;1.0&quot;?&gt;
-</span><span class='line'><span class="nt">&lt;package&gt;&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span><span class="ni">&amp;lt;</span>metadata<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>id<span class="ni">&amp;gt;</span>google-pinyin<span class="ni">&amp;lt;</span>/id<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>version<span class="ni">&amp;gt;</span>1.0<span class="ni">&amp;lt;</span>/version<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>title<span class="ni">&amp;gt;</span>Google Pinyin<span class="ni">&amp;lt;</span>/title<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>authors<span class="ni">&amp;gt;</span>Han Kai<span class="ni">&amp;lt;</span>/authors<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>owners<span class="ni">&amp;gt;</span>Han Kai<span class="ni">&amp;lt;</span>/owners<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>requireLicenseAcceptance<span class="ni">&amp;gt;</span>false<span class="ni">&amp;lt;</span>/requireLicenseAcceptance<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>description<span class="ni">&amp;gt;</span>Google pinyin installation for Chinese requirement.<span class="ni">&amp;lt;</span>/description<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>copyright<span class="ni">&amp;gt;</span>Copyright 2012<span class="ni">&amp;lt;</span>/copyright<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>tags<span class="ni">&amp;gt;</span>google pinyin<span class="ni">&amp;lt;</span>/tags<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>/metadata<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>files<span class="ni">&amp;gt;</span>
-</span><span class='line'>    <span class="ni">&amp;lt;</span>file src=&quot;chocolateyInstall.ps1&quot; target=&quot;tools/chocolateyInstall.ps1&quot; /<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="ni">&amp;lt;</span>/files<span class="ni">&amp;gt;</span>
-</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="nt">&lt;p&gt;&lt;/package&gt;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:xml %}
+&lt;?xml version="1.0"?>
+<package></p>
+
+<pre><code>&lt;metadata&gt;
+    &lt;id&gt;google-pinyin&lt;/id&gt;
+    &lt;version&gt;1.0&lt;/version&gt;
+    &lt;title&gt;Google Pinyin&lt;/title&gt;
+    &lt;authors&gt;Han Kai&lt;/authors&gt;
+    &lt;owners&gt;Han Kai&lt;/owners&gt;
+    &lt;requireLicenseAcceptance&gt;false&lt;/requireLicenseAcceptance&gt;
+    &lt;description&gt;Google pinyin installation for Chinese requirement.&lt;/description&gt;
+    &lt;copyright&gt;Copyright 2012&lt;/copyright&gt;
+    &lt;tags&gt;google pinyin&lt;/tags&gt;
+&lt;/metadata&gt;
+&lt;files&gt;
+    &lt;file src="chocolateyInstall.ps1" target="tools/chocolateyInstall.ps1" /&gt; 
+&lt;/files&gt;
+</code></pre>
+
+<p></package>
+{% endcodeblock %}</p>
 
 <p>以及
 --- C:/GooglePinyinPackage/chocolateyInstall.ps1 ---
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='powershell'><span class='line'><span class="k">try</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="n">Install-ChocolateyPackage</span> <span class="s1">&#39;google-pinyin&#39;</span> <span class="s1">&#39;exe&#39;</span> <span class="s1">&#39;/s&#39;</span> <span class="s1">&#39;http://dl.google.com/pinyin/v2/GooglePinyinInstaller.exe&#39;</span>
-</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span> <span class="k">catch</span> <span class="p">{&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;</span><span class="nb">Write-ChocolateyFailure</span> <span class="s1">&#39;Google Pinyin&#39;</span> <span class="s2">&quot;</span><span class="si">$(</span><span class="err">$</span><span class="si">_.Exception.Message)</span><span class="s2">&quot;</span>
-</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;}</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:powershell %}
+try {</p>
+
+<pre><code>Install-ChocolateyPackage 'google-pinyin' 'exe' '/s' 'http://dl.google.com/pinyin/v2/GooglePinyinInstaller.exe'
+</code></pre>
+
+<p>} catch {</p>
+
+<pre><code>Write-ChocolateyFailure 'Google Pinyin' "$($_.Exception.Message)"
+</code></pre>
+
+<p>}
+{% endcodeblock %}</p>
 
 <p>此处使用了Chocolatey提供的Install-ChocolateyPackage函数，它需要四个参数，id（google-pinyin，这个要和google-pinyin.nuspec中的一致），安装文件类型，安装参数（/s是silent installation）和安装文件的下载路径。</p>
 
 <p>这时在C:\google-pinyin目录下运行下面的命令，可以生成google-pinyin.nupack包：
-<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='powershell'><span class='line'><span class="n">cpack</span> <span class="n">google-pinyin</span><span class="p">.</span><span class="n">nuspec</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+{% codeblock lang:powershell %}
+cpack google-pinyin.nuspec
+{% endcodeblock %}</p>
 
 <p>运行下面的命令可以安装这个包，</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='powershell'><span class='line'><span class="n">cinst</span> <span class="n">googe-pinyin</span> <span class="n">-source</span> <span class="n">C</span><span class="err">:</span><span class="p">\</span><span class="n">GooglePinyinPackage</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>{% codeblock lang:powershell %}
+cinst googe-pinyin -source C:\GooglePinyinPackage
+{% endcodeblock %}</p>
 
 <p>其中，cinst是chocolatey install的快捷方式。<strong>-source C:\GooglePinyinPackage</strong>非常重要，它将本地C:\GooglePinyinPackage目录设置为cinst的安装软件包源。如果没有这个参数，cinst会在默认的两个源中查找，而后抱怨找不到google-pinyin。cinst的两个默认源是<a href="http://chocolatey.org/api/v2/">这里</a>和<a href="http://chocolatey.org/api/v2/">这里</a>。</p>
 
