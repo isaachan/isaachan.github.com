@@ -119,6 +119,7 @@ PowerPoint和Keynote都有模版功能，可以对所有的幻灯片做统一的
 
 {% codeblock lang:scheme %}
 (set-margin! 0)
+
 (define black-bg
   (filled-rectangle client-w client-h)
 )
