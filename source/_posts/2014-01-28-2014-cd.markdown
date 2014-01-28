@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "2014-cd"
+title: "展望2014，“马上持续交付”"
 date: 2014-01-28 16:54
 comments: true
 categories: 
