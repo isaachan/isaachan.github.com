@@ -1,0 +1,266 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>文本化的幻灯片 - Slideshow - To iterate is human, to recurse divine.</title>
+  <meta name="author" content="">
+
+  
+  <meta name="description" content="作为一名体面的程序员，作为一名被Unix文化侵染的程序员，作为一名希望世界是由简单的纯文本构成的程序员，生活中充满太多无奈。二进制的格式无处不在，后缀名将文件分出了三六九等。这其中，有两种文件我最无奈，图像和幻灯片，它们总和我的工作生活密切相关。 不过，现在光来了！ &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://isaachan.github.com/blog/2013/08/17/slide-textuality">
+  <link href="/favicon.ico" rel="icon">
+  
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="To iterate is human, to recurse divine." type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-42344616-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="no-sidebar"  >
+  <header role="banner"><hgroup>
+  <h1>To iterate is human, to recurse divine.</h1>
+  
+    <h2><a href="/">金皆</a></h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation">
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:isaachan.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/aboutme.html">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">文本化的幻灯片 - Slideshow</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-17T22:12:00+08:00" pubdate data-updated="true">Aug 17<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>作为一名体面的程序员，作为一名被Unix文化侵染的程序员，作为一名希望世界是由简单的纯文本构成的程序员，生活中充满太多无奈。二进制的格式无处不在，后缀名将文件分出了三六九等。这其中，有两种文件我最无奈，图像和幻灯片，它们总和我的工作生活密切相关。</p>
+
+<p>不过，现在光来了！HuKai在一篇<a href="http://www.iamhukai.com/?p=149">blog</a>里介绍了一个很酷的工具——Dot，它提供了一种可以基于文本描述图形的简洁的DSL。利用这个DSL，可以绘制出相当复杂的图案。激动之余，我开始寻找文本化幻灯片的方法。于是，我发现了DrRacket（它的前身就是大名鼎鼎的DrScheme）。DrRacket是MIT开发的Scheme的运行时，其中包含一个制作幻灯片的组件，名曰Slideshow。</p>
+
+<p>很明显，Slideshow要求使用者用scheme来编写幻灯片，这就满足了像我这样的语言控的怪癖。我也因此放弃了一些其他类似的工具，比如SliTex。在Slideshow中，最核心的概念是pict和slide。slide自然表示一张幻灯片，它是由一个或多个pict按照不同的顺序排列组成的。slideshow的源代码以rkt为后缀名。下面是Slideshow的Hello World（hello.rkt）：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="o">#</span><span class="nv">lang</span> <span class="nv">slideshow</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">(</span><span class="nf">slide</span> <span class="p">(</span><span class="nf">t</span> <span class="err">“</span><span class="nv">Hello</span> <span class="nv">World</span><span class="err">”</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<!-- more -->
+
+
+<p>第一行代码注册了语言的类型，即slideshow，第二行代码包含一个slide函数的调用，它会产生一张幻灯片，幻灯片的内容是(t “Hello World”)函数的结果——包含字符串“Hello World”的pict。t是Slideshow中众多返回pict的函数之一。在默认情况下，slide函数会把pict置于幻灯片的中间，不过它有一个可选的选项layout来控制pict的位置，让我们在刚才的基础上再增加一张幻灯片：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="err">…</span>
+</span><span class='line'><span class="p">(</span><span class="nf">slide</span>
+</span><span class='line'>   <span class="o">#</span><span class="nv">:layout</span> <span class="ss">&#39;top</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">t</span> <span class="err">“</span><span class="nv">Hello</span> <span class="nv">World</span><span class="err">”</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>layout的值包括&#8217;center，&#8217;top，&#8217;tall和&#8217;auto，&#8217;auto是默认值。slide还有其他选项，title、name、inset和timeout等，可以为slide提供更多可配置的功能。</p>
+
+<p>如果你对t函数使用的字体和大小不满意的话，可以使用text函数来自定义它们。</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="err">…</span>
+</span><span class='line'><span class="p">(</span><span class="nf">slide</span>
+</span><span class='line'>   <span class="o">#</span><span class="nv">:title</span> <span class="err">“</span><span class="nv">Code</span> <span class="nv">Snap</span><span class="err">”</span>
+</span><span class='line'>   <span class="p">(</span><span class="nf">text</span> <span class="err">“</span><span class="nv">String</span> <span class="nv">name</span> <span class="nv">=</span> <span class="nv">getNameFromDB</span><span class="p">()</span><span class="c1">;” &#39;(bold . morden), (+ (current-font-size 10))))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我为这张幻灯片增加了title “Code Snap”，它会出现在幻灯片的顶端。然后使用text函数生成一段Java代码片段，为了让它看上去更像“代码”，使用等宽字体morden并加粗，大小也比默认字号大了10。这时在命令行里键入下面的命令</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>&gt; slideshow hello.rkt
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>就能看到前面制作的三张幻灯片依次播放了。如果你现在对Slideshow产生了一点兴趣，那么别犹豫了，在命令行里输入</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>&gt; slideshow
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>就立刻能够看到一个介绍Slideshow入门教程幻灯片，它非常给力，而且它就是用Slideshow制作的，你可以在drrakect的安装目录下找到它的源代码。</p>
+
+<p>希望你能花点儿时间学习一下Slideshow，然后从此爱上幻灯片，爱上Scheme！</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-17T22:12:00+08:00" pubdate data-updated="true">Aug 17<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/racket/'>racket</a>, <a class='category' href='/blog/categories/scheme/'>scheme</a>, <a class='category' href='/blog/categories/slideshow/'>slideshow</a>, <a class='category' href='/blog/categories/textuality/'>textuality</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/02/07/chocolatey-i-love-you/" title="Previous Post: Chocolatey, 我爱你">&laquo; Chocolatey, 我爱你</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/08/18/slide-textuality-tips/" title="next Post: 文本化的幻灯片 - 实用技术">文本化的幻灯片 - 实用技术 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 -  -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'isaachan';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://isaachan.github.com/blog/2013/08/17/slide-textuality/';
+        var disqus_url = 'http://isaachan.github.com/blog/2013/08/17/slide-textuality/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
