@@ -1,13 +1,91 @@
 ---
 layout: post
-title: "隐藏在https下的加密算法"
-date: 2014-07-03 19:03
+title: "HTTPS背后的加密算法"
+date: 2014-07-20 19:03
 comments: true
 categories: 
  - security
  - web
 ---
 
-当你在浏览器的地址栏中输入一个https协议的地之后，
+当你在浏览器的地址栏上输入https开头的网址后，浏览器和服务器之间会在接下来的几百毫秒内进行大量的通信。InfoQ的这篇[文章](http://www.infoq.com/articles/HTTPS-Connection-Jeff-Moser)对此有非常详细的描述。这些复杂的步骤的第一步，就是浏览器与服务器之间协商一个在后续通信中使用的密钥算法。这个过程简单来说是这样的：
 
-打开这个链接，可以查看你的浏览器支持的加密算法: https://cc.dcsec.uni-hannover.de/
+1. 浏览器把自身支持的一系列Cipher Suite（密钥算法套件，后文简称Cipher）[C1,C2,C3, ...]发给服务器；
+2. 服务器接收到浏览器的所有Cipher后，与自己支持的套件作对比，如果找到双方都支持的Cipher，则告知浏览器；
+3. 浏览器与服务器使用匹配的Cipher进行后续通信。<!-- more -->如果服务器没有找到匹配的算法，浏览器（以Firefox 30为例，后续例子中使用的浏览器均为此版本的Firefox）将给出错误信息:
+
+![Secure连接失败错误](/images/cipher-behind-https/ssl-error-no-cypher-overlap.png)
+图1
+
+本文将讲述如何探究这一过程。
+
+## 1. 浏览器 ##
+浏览器支持哪些Cipher？这取决于浏览器支持的SSL/TLS协议的版本。习惯上，我们通常把HTTPS与SSL协议放到一起；事实上，SSL协议是Netcape公司于上世纪90年代中期提出的协议，自身发展到3.0版本。1999年该协议由ITEL接管，进行了标准化，改名为TLS。可以说，TLS 1.0就是SSL 3.1版本。在Wikipedia上并没有SSL独立的条目，而是会重定向到[TLS](http://en.wikipedia.org/wiki/Secure_Sockets_Layer)，可见两种协议关系之紧密。目前TLS最新版本是1.2。互联网上有超过99%的网站支持TLS 1.0，而支持TLS 1.2的网站尚不足40%。打开Firefox浏览器，在地址栏中输入about:config，然后搜索tls.version，会看到下面的选项:
+
+![AboutConfig](/images/cipher-behind-https/about-config.png)
+图2
+
+其中security.tls.version.min和security.tls.version.max两项决定了Firefox支持的SSL/TLS版本，根据[Firefox文档](http://kb.mozillazine.org/Security.tls.version.%2A)的介绍，这两项的可选值及其代表的协议是：
+
+* 0 - SSL 3.0
+* 1 - TLS 1.0
+* 2 - TLS 1.1
+* 3 - TLS 1.2
+
+因此上图的设置说明当前浏览器支持协议的下限是SSL 3.0，上限是TLS 1.2。现在，如果把security.tls.version.min一项改为3，那么浏览器就只支持TLS 1.2了。前文提到，目前只有不足40%的网站支持TLS 1.2，比如Amazon就不在这40%之列，所以此时访问https://amazon.com，就会收到“Secure Connection Failed”的错误信息，如图2所示。
+
+了解了SSL/TLS协议后，可以使用Wireshark（或类似的可以抓去网络包的工具）通过分析网络包的信息，来查看浏览器发送给服务器的所有Cipher。Wireshark是一款[使用简单却非常强大](http://www.cnblogs.com/tankxiao/archive/2012/10/10/2711777.html)的抓包工具。
+
+浏览器会首先发起握手协议，既一个“ClientHello”消息，在消息体中，可以找到Firefox支持的Cipher。在Wireshark中，按照Protocol协议排序，然后从TLS 1.2协议的报文中找到一个Info为“Client Hello”的。选中这个，然后在下面的报文信息窗口中依次找到Secure Sockets Layer -> TLSv1.2 Record Layer -> Handshake Protocal -> Cipher Suites。例子中的第一个Cipher是TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256，一共有23个:
+
+![clienthello](/images/cipher-behind-https/wireshark-screenshot-clienthello.png)
+图3
+
+如果继续找一个Info为“ServerHello”的报文，可以在类似的位置找到服务器返回的Cipher，在本例中是TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:
+
+ ![serverhello](/images/cipher-behind-https/wireshark-screenshot-serverhello.png)
+图4
+
+关于密钥算法这一长串名字的含义，后面说明。接下来，浏览器就要等待服务器响应它的请求。我们来看一看服务器端都做了些什么。
+
+## 2. 服务器 ##
+让我们以Windows为例。若要查看操作系统支持哪些密钥算法，可以运行gpedit.msc，依次进入”Computer Configuration” -> ”Administrative Templates” -> “Network” -> “SSL Configuration Settings”，这时可以在窗口右边看到”SSL Cipher Suite Order”项:
+
+![gpedit](/images/cipher-behind-https/gpedit.png)
+图5
+
+点击该项后进入”SSL Cipher Suite Order”。这里可以看到操作系统支持的Cipher的集合，以及对不同Cipher的排序
+
+![cipher-suite-order](/images/cipher-behind-https/ssl-suite-order.png)
+图6
+
+如果需要调整这里排序，或者去掉一些弱的Cipher，可以点击左上角的“Enabled”，然后在“Options”中重写编辑Cipher的列表。如果喜欢命令行，可以通过下面的Powershell命令修改密钥算法套件：
+
+{% codeblock lang:powershell %}
+Set-ItemProperty -path HKLM:\SOFTWARE\Policies\Microsoft\Cryptography\Configuration\SSL\0001002 -name Functions -value "XXX,XXX,XXX"
+{% endcodeblock %}
+
+那么Cipher的这一长串名字是什么含义呢？其实，每种[Cipher](http://en.wikipedia.org/wiki/Cipher_suite)的名字里包含了四部分信息，分别是
+
+* **密钥交换算法**，用于决定客户端与服务器之间在握手的过程中如何认证，用到的算法包括RSA，Diffie-Hellman，ECDH，PSK等
+* **加密算法**，用于加密消息流，该名称后通常会带有两个数字，分别表示密钥的长度和初始向量的长度，比如DES 56/56, RC2 56/128, RC4 128/128, AES 128/128, AES 256/256
+* **报文认证信息码（MAC）算法**，用于创建报文摘要，确保消息的完整性（没有被篡改），算法包括MD5，SHA等。
+* **PRF（伪随机数函数）**，用于生成“master secret”。
+
+完全搞懂上面的内容似乎还需要一本书的介绍（我已经力不从心了）。不过大致了解一下，有助于理解Cipher的名字，比如前面服务器发回给客户端的Cipher，
+
+ **TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA**
+
+从其名字可知，它是
+
+* 基于TLS协议的；
+* 使用ECDHE、RSA作为密钥交换算法；
+* 加密算法是AES（密钥和初始向量的长度都是256）；
+* MAC算法（这里就是哈希算法）是SHA。
+
+熟悉了Cipher名字背后的含义后，让我们看看像IIS这样的Web服务器如何选择一个密钥算法呢？假如浏览器发来的密钥算法套件为[C1, C2, C3]，而Windows Server支持的套件为[C4, C2, C1, C3]时，C1和C2都是同时被双方支持的算法，IIS是优先返回C1，还是C2呢？**答案是C2**。IIS会遍历服务器的密钥算法套件，取出第一个C4，发现浏览器并不支持；接下来取第二个C2，这个被浏览器支持！于是，IIS选择了C2算法，并将它包含在一个“ServerHello”握手协议中，发回给客户端。这就有了图5中的结果。
+
+## 3. 选择 ##
+作为浏览器的使用者，你可以让浏览器只能访问支持TLS 1.2协议的站点，以获得更好的安全性，以及更差的体验。作为服务器的维护者，似乎将最强壮的Cipher排在前面是正确的选择。就在前不久，我们开发的一个Web报税系统在一次由第三方进行的安全检查中，被报出的问题之一就是服务器默认的Cipher太弱（RC4-based），于是我们使用了AES-based的Cipher，但是密钥长度只是选择了128，而不是256，背后的担忧主要来自于性能——加密与解密是CPU密集型操作，我们担心到报税忙季时，过强的Cipher会带来性能问题。
+
+其实像Amazon和[Google](http://crypto.stackexchange.com/questions/853/google-is-using-rc4-but-isnt-rc4-considered-unsafe)这些互联网公司都在使用RC4-based的加密算法。这又是一次理论与实践的交锋。至于这次对于的线上系统所做的调整会不会对性能产生影响，几个月后就能见分晓了。
