@@ -4,7 +4,7 @@
   <title><![CDATA[Category: web | To iterate is human, to recurse divine.]]></title>
   <link href="http://isaachan.github.com/blog/categories/web/atom.xml" rel="self"/>
   <link href="http://isaachan.github.com/"/>
-  <updated>2014-07-20T21:58:55+08:00</updated>
+  <updated>2014-10-04T11:40:43+08:00</updated>
   <id>http://isaachan.github.com/</id>
   <author>
     <name><![CDATA[]]></name>
@@ -79,9 +79,9 @@
 
 <p>如果需要调整这里排序，或者去掉一些弱的Cipher，可以点击左上角的“Enabled”，然后在“Options”中重写编辑Cipher的列表。如果喜欢命令行，可以通过下面的Powershell命令修改密钥算法套件：</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='powershell'><span class='line'><span class="nb">Set-ItemProperty</span> <span class="n">-path</span> <span class="n">HKLM</span><span class="err">:</span><span class="p">\</span><span class="n">SOFTWARE</span><span class="p">\</span><span class="n">Policies</span><span class="p">\</span><span class="n">Microsoft</span><span class="p">\</span><span class="n">Cryptography</span><span class="p">\</span><span class="n">Configuration</span><span class="p">\</span><span class="n">SSL</span><span class="p">\</span><span class="n">0001002</span> <span class="n">-name</span> <span class="n">Functions</span> <span class="n">-value</span> <span class="s2">&quot;XXX,XXX,XXX&quot;</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>{% codeblock lang:powershell %}
+Set-ItemProperty -path HKLM:\SOFTWARE\Policies\Microsoft\Cryptography\Configuration\SSL\0001002 -name Functions -value "XXX,XXX,XXX"
+{% endcodeblock %}</p>
 
 <p>那么Cipher的这一长串名字是什么含义呢？其实，每种<a href="http://en.wikipedia.org/wiki/Cipher_suite">Cipher</a>的名字里包含了四部分信息，分别是</p>
 

@@ -9,7 +9,7 @@
   <meta name="author" content="">
 
   
-  <meta name="description" content="当你在浏览器的地址栏上输入https开头的网址后，浏览器和服务器之间会在接下来的几百毫秒内进行大量的通信。InfoQ的这篇文章对此有非常详细的描述。这些复杂的步骤的第一步，就是浏览器与服务器之间协商一个在后续通信中使用的密钥算法。这个过程简单来说是这样的： 浏览器把自身支持的一系列Cipher &hellip;">
+  <meta name="description" content="现在，我们已经用Prolog实现了范例Scheme语言的源代码读取、词法分析和语法分析的部分，并且获得了AST。最后，我们要实现一个Scheme的运行时来消费AST，生成最终的计算结果。 当解析器生成了抽象语法树(AST)后，运行时环境可以对它进行处理，计算语法树表达的数值。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,221 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/04/build-simple-scheme-parser-using-prolog-4/">Scheme on Prolog (4)：运行时环境</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-04T09:49:00+08:00" pubdate data-updated="true">Oct 4<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>现在，我们已经用Prolog实现了范例Scheme语言的<a href="/blog/2014/10/02/build-simple-scheme-parser-using-prolog-1/">源代码读取</a>、<a href="/blog/2014/10/04/build-simple-scheme-parser-using-prolog-2/">词法分析</a>和<a href="/blog/2014/10/04/build-simple-scheme-parser-using-prolog-3/">语法分析</a>的部分，并且获得了AST。最后，我们要实现一个Scheme的运行时来消费AST，生成最终的计算结果。</p>
+
+<p>当解析器生成了抽象语法树(AST)后，运行时环境可以对它进行处理，计算语法树表达的数值。如果代码只是如下简单的四则运算，</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="nb">- </span><span class="mi">3</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="nb">* </span><span class="mi">3</span> <span class="mi">5</span><span class="p">)</span> <span class="mi">2</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/10/04/build-simple-scheme-parser-using-prolog-4/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/04/build-simple-scheme-parser-using-prolog-3/">Scheme on Prolog (3)：文法分析</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-04T09:49:00+08:00" pubdate data-updated="true">Oct 4<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在<a href="/blog/2014/10/04/build-simple-scheme-parser-using-prolog-2/">上一篇文章</a>中，我们完成了词法分析，从源代码文件中获得了词法单元的序列。接下来，这些词法单元会被送到文法分析器中做进一步处理。我们知道，形式文法是由一组文法生成式组成的。一个生成式可能是这样子的，</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='antlr'><span class='line'><span class="nl">IfStat</span><span class="w"> </span><span class="err">-&gt;</span><span class="w"> </span><span class="err">&#39;if&#39;</span><span class="w"> </span><span class="err">&#39;(&#39;</span><span class="w"> </span><span class="err">Expr</span><span class="w"> </span><span class="err">&#39;)&#39;</span><span class="w"> </span><span class="err">StateBlock</span><span class="w"></span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这是常见的描述if语句的生成式，它表达了这样的含义：如果匹配了‘if’，并且匹配了&#8217;(&#8216;，并且匹配了Expr，并且匹配了&#8217;)&#8217;，并且遇到了StateBlock，那么就匹配了一个完整的IfStat。这里我故意使用了“如果”、“并且”、“那么”，目的是想说明文法生成式和Prolog语句是有着惊人的相似的。每一个生成式实际上就是一个命题。因此，相对于命令式语言，用Prolog进行文法解析是一件比较简单的工作。下面，我们开始用Prolog实现简单Scheme的文法分析部分。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/10/04/build-simple-scheme-parser-using-prolog-3/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/04/build-simple-scheme-parser-using-prolog-2/">Scheme on Prolog (2)：词法分析</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-04T09:49:00+08:00" pubdate data-updated="true">Oct 4<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在上一篇“<a href="/blog/2014/10/02/build-simple-scheme-parser-using-prolog-1/">读取源文件</a>”的文章中，我们实现了readFile谓词，利用它可以读取源文件的内容，并把字节流保存在一个整数的列表中。接下来我们将消费这些数据，通过它们创建词法单元。因此，本节将讲述如何构造一个词法分析器来完成这件事。</p>
+
+<h2>词法分析</h2>
+
+<p>就像在第一节已经指出的，本文处理的只是Scheme的子集，它的词法规则如下：</p>
+
+<ul>
+<li>+, -, *, /, (, ),Whitespace</li>
+<li>&#8216;define&#8217;</li>
+<li>identifier number</li>
+</ul>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/10/04/build-simple-scheme-parser-using-prolog-2/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/02/build-simple-scheme-parser-using-prolog-1/">Scheme on Prolog (1)：读取源文件</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-02T22:53:00+08:00" pubdate data-updated="true">Oct 2<span>nd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>在接下来的一系列文章里，我将详细讲述如何利用Prolog，从零开始构造一个Scheme子集的<a href="https://github.com/isaachan/scheme-runtime">运行时环境</a>。这个运行时环境可以解释执行如下四则运算的Scheme代码：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="nb">+ </span><span class="mi">1</span> <span class="mi">2</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="nb">- </span><span class="mi">5</span> <span class="mi">3</span><span class="p">)</span> <span class="p">(</span><span class="nb">* </span><span class="mi">2</span> <span class="mi">3</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>另外，它还可以通过“define”定义变量，</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="k">define </span><span class="nv">a</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="k">define </span><span class="nv">b</span> <span class="mi">2</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="nb">+ </span><span class="nv">a</span> <span class="nv">b</span><span class="p">)</span>
+</span><span class='line'><span class="o">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>选择Scheme的原因在于它足够简单而且有趣。另外，通过实现这个简单的运行时环境，我们也可以领略Prolog的独特之处。Prolog作为应用最广泛的逻辑式程序设计语言，在描述文法生成式时具有很多语言无可比拟的优势；另外作为声明式语言，Prolog不必描述运算的细节（甚至语句执行的顺序），因此程序的可读性比命令式语言要好很多。</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/10/02/build-simple-scheme-parser-using-prolog-1/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>

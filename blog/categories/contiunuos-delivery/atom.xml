@@ -4,7 +4,7 @@
   <title><![CDATA[Category: contiunuos delivery | To iterate is human, to recurse divine.]]></title>
   <link href="http://isaachan.github.com/blog/categories/contiunuos-delivery/atom.xml" rel="self"/>
   <link href="http://isaachan.github.com/"/>
-  <updated>2014-07-20T21:58:55+08:00</updated>
+  <updated>2014-10-04T11:40:43+08:00</updated>
   <id>http://isaachan.github.com/</id>
   <author>
     <name><![CDATA[]]></name>
@@ -33,9 +33,9 @@
 
 <p>一行代码有多大的威力？在内存中创建一个新对象；创建一个Stub的数据库、Web服务器；还是创建一台新的虚拟机。我们可以在不大幅度提高代码复杂度的前提下，完成不同层次的自动化测试。如今，我们可以很容易地构造出干净的领域对象或者假的数据库、第三方服务，因此能够以很低的成本频繁、自动地运行单元测试和集成测试等低层的测试。而随着DevOps、虚拟化技术的成熟，我们也可以很容易地重复创建基础设施，比如下面是我从手头的代码库中复制出的一行代码：</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">vmRef</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">xenapi</span><span class="o">.</span><span class="n">VM</span><span class="o">.</span><span class="n">clone</span><span class="p">(</span><span class="n">templateVM</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>{% codeblock lang:python %}
+vmRef = session.xenapi.VM.clone(templateVM, name)
+{% endcodeblock %}</p>
 
 <p>它可以创建一台新的虚拟机。这就让自动化测试能够深入到基础设施的级别，可以更早地发现与之相关的问题。而且，也可以让一些高度依赖基础设施的测试，比如安全测试、性能测试等，可以以更低的成本，更频繁地运行。</p>
 

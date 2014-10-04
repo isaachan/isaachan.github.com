@@ -1,0 +1,446 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Scheme on Prolog (4)：运行时环境 - To iterate is human, to recurse divine.</title>
+  <meta name="author" content="">
+
+  
+  <meta name="description" content="现在，我们已经用Prolog实现了范例Scheme语言的源代码读取、词法分析和语法分析的部分，并且获得了AST。最后，我们要实现一个Scheme的运行时来消费AST，生成最终的计算结果。 当解析器生成了抽象语法树(AST)后，运行时环境可以对它进行处理，计算语法树表达的数值。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://isaachan.github.com/blog/2014/10/04/build-simple-scheme-parser-using-prolog-4">
+  <link href="/favicon.ico" rel="icon">
+  
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="To iterate is human, to recurse divine." type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-42344616-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   class="no-sidebar"  >
+  <header role="banner"><hgroup>
+  <h1>To iterate is human, to recurse divine.</h1>
+  
+    <h2><a href="/">金皆</a></h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation">
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:isaachan.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/aboutme.html">About Me</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Scheme on Prolog (4)：运行时环境</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-04T09:49:00+08:00" pubdate data-updated="true">Oct 4<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>现在，我们已经用Prolog实现了范例Scheme语言的<a href="/blog/2014/10/02/build-simple-scheme-parser-using-prolog-1/">源代码读取</a>、<a href="/blog/2014/10/04/build-simple-scheme-parser-using-prolog-2/">词法分析</a>和<a href="/blog/2014/10/04/build-simple-scheme-parser-using-prolog-3/">语法分析</a>的部分，并且获得了AST。最后，我们要实现一个Scheme的运行时来消费AST，生成最终的计算结果。</p>
+
+<p>当解析器生成了抽象语法树(AST)后，运行时环境可以对它进行处理，计算语法树表达的数值。如果代码只是如下简单的四则运算，</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="nb">- </span><span class="mi">3</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="nb">* </span><span class="mi">3</span> <span class="mi">5</span><span class="p">)</span> <span class="mi">2</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<!-- more -->
+
+
+<p>那么对AST遍历一次就足够了，甚至在解析的过程中就可以获得结果了，根本不需要生成AST。但是，我们希望这个运行时能够支持通过define定义变量，甚至变量的作用域是全局的，而不仅仅是从它声明的地方开始，</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="k">define </span><span class="nv">a</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="nb">+ </span><span class="nv">a</span> <span class="nv">b</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="k">define </span><span class="nv">b</span> <span class="mi">2</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面这段程序的输出应该是3，而不是“b没有声明”的错误信息，因为define定义的变量的作用域贯穿所有的代码。对于这一要求，我们需要遍历两次AST，第一次构建符号表，第二次完成运算。在实际的开发中，我们会先完成第二步的功能，即先不考虑代码中存在变量的情况，然后在逐步地加入对变量的支持。</p>
+
+<p>让我们呢先看看最简单的情形，求这个表达式的值</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="nb">+ </span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>按照前面的分析，解析器会生成下面的AST，</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">[</span><span class="nv">plus,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>连续累加plus后面的元素，这需要一个简单的递归就够了：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">getValue</span><span class="p">([</span><span class="nv">add,</span> <span class="nv">FirstOperand|OtherOperands</span><span class="p">]</span><span class="o">,</span> <span class="nv">Result</span><span class="p">)</span> <span class="nv">:-</span>
+</span><span class='line'>    <span class="nv">getValue</span><span class="p">(</span><span class="nf">FirstOperand,</span> <span class="nv">OtherOperands,</span> <span class="nv">Result</span><span class="p">)</span><span class="o">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">getValue</span><span class="p">(</span><span class="nf">ResultSoFar,</span> <span class="p">[]</span><span class="o">,</span> <span class="nv">ResultSoFar</span><span class="p">)</span><span class="o">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">getValue</span><span class="p">(</span><span class="nf">ResultSoFar,</span> <span class="p">[</span><span class="nv">H|T</span><span class="p">]</span><span class="o">,</span> <span class="nv">Result</span><span class="p">)</span> <span class="nv">:-</span>
+</span><span class='line'>    <span class="nv">NewResult</span> <span class="nv">is</span> <span class="nv">ResultSoFar</span> <span class="nv">+</span> <span class="nv">H,</span>
+</span><span class='line'>    <span class="nv">getValue</span><span class="p">(</span><span class="nf">NewResult,</span> <span class="nv">T,</span> <span class="nv">Result</span><span class="p">)</span><span class="o">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>第一行的getValue谓词把操作数分成了FirstOperand和OtherOperands，实际上表明了[add]这样的输入是不合法的，它后面必须至少有一个操作数。下面让问题再复杂一些，Operands中不仅包含数字，还递归地包含一个加法表达式，</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">[</span><span class="nv">add,</span> <span class="mi">1</span><span class="o">,</span> <span class="p">[</span><span class="nv">add,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="p">]</span><span class="o">,</span> <span class="mi">4</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>观察前面的代码，我们发现这时会引发问题的地方是下面这行代码，</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">NewResult</span> <span class="nv">is</span> <span class="nv">ResultSoFar</span> <span class="nv">+</span> <span class="nv">H,</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>它从操作数列表中取出第一个元素（H），然后把它追加到ResultSoFar。但是这里并没有区分H的类型——数字还是列表，如果H是一个列表，那么我们还要先对它进行求值，</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">getValue</span><span class="p">(</span><span class="nf">H,</span> <span class="nv">Value</span><span class="p">)</span><span class="o">,</span>
+</span><span class='line'><span class="nv">NewResult</span> <span class="nv">is</span> <span class="nv">ResultSoFar</span> <span class="nv">+</span> <span class="nv">Value,</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当然，如果H是一个数字，那么Value就是它自身，下面的谓词表述了这个含义，</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">getValue</span><span class="p">(</span><span class="nf">Number,</span> <span class="nv">Number</span><span class="p">)</span> <span class="nv">:-</span> <span class="nv">number</span><span class="p">(</span><span class="nf">Number</span><span class="p">)</span><span class="o">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样，我们就扩展了getValue谓词的抽象级别，而且也反映了scheme语言的“函数性”。在解释执行scheme的过程中，要做的事情就是不断地求值，表达式有值，一个数字也有值（就是它自身），后面会看到遇到变量时也要对它求值。</p>
+
+<p>下面要让运行时可以执行除了加法以外其他的四则运算了。在前面的程序中，“add”其实只是个花瓶，对后面的计算过程没有丝毫影响，事实上“NewResult is ResultSoFar + H”会无条件地执行加法。因此我们要把操作符add（以及minus，multi，div）传递给后面的谓词，当然，传递前我们判断它们是否是合法的操作符：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">operator</span><span class="p">(</span><span class="nf">add</span><span class="p">)</span><span class="o">.</span>
+</span><span class='line'><span class="nv">operator</span><span class="p">(</span><span class="nf">minus</span><span class="p">)</span><span class="o">.</span>
+</span><span class='line'><span class="nv">operator</span><span class="p">(</span><span class="nf">multi</span><span class="p">)</span><span class="o">.</span>
+</span><span class='line'><span class="nv">operator</span><span class="p">(</span><span class="nf">div</span><span class="p">)</span><span class="o">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上面四个谓词描述了目前我们支持的四种操作符。下面所有元数为3（参数个数为3）的getValue谓词都要增加一个参数，即操作符。最后，还需要一组谓词来根据不同的操作符完成最终的计算，</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">getValue</span><span class="p">([</span><span class="nv">Operator,</span> <span class="nv">FirstOperand|OtherOperands</span><span class="p">]</span><span class="o">,</span> <span class="nv">Result</span><span class="p">)</span> <span class="nv">:-</span>
+</span><span class='line'>    <span class="nv">operator</span><span class="p">(</span><span class="nf">Operator</span><span class="p">)</span><span class="o">,</span>
+</span><span class='line'>    <span class="nv">getValue</span><span class="p">(</span><span class="nf">Operator,</span> <span class="nv">FirstOperand,</span> <span class="nv">OtherOperands,</span> <span class="nv">Result</span><span class="p">)</span><span class="o">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">getValue</span><span class="p">(</span><span class="nf">Operator,</span> <span class="nv">ResultSoFar,</span> <span class="p">[</span><span class="nv">H|T</span><span class="p">]</span><span class="o">,</span> <span class="nv">Result</span><span class="p">)</span> <span class="nv">:-</span>
+</span><span class='line'>    <span class="nv">getValue</span><span class="p">(</span><span class="nf">H,</span> <span class="nv">Value</span><span class="p">)</span><span class="o">,</span>
+</span><span class='line'>    <span class="nv">calculate</span><span class="p">(</span><span class="nf">Operator,</span> <span class="nv">ResultSoFar,</span> <span class="nv">Value,</span> <span class="nv">NewResult</span><span class="p">)</span><span class="o">,</span>
+</span><span class='line'>    <span class="nv">getValue</span><span class="p">(</span><span class="nf">Operator,</span> <span class="nv">NewResult,</span> <span class="nv">T,</span> <span class="nv">Result</span><span class="p">)</span><span class="o">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">calculate</span><span class="p">(</span><span class="nf">add,</span> <span class="nv">Oper1,</span> <span class="nv">Oper2,</span> <span class="nv">Result</span><span class="p">)</span> <span class="nv">:-</span> <span class="nv">Result</span> <span class="nv">is</span> <span class="nv">Oper1</span> <span class="nv">+</span> <span class="nv">Oper2</span><span class="o">.</span>
+</span><span class='line'><span class="nv">calculate</span><span class="p">(</span><span class="nf">minus,</span> <span class="nv">Oper1,</span> <span class="nv">Oper2,</span> <span class="nv">Result</span><span class="p">)</span> <span class="nv">:-</span> <span class="nv">Result</span> <span class="nv">is</span> <span class="nv">Oper1</span> <span class="nv">-</span> <span class="nv">Oper2</span><span class="o">.</span>
+</span><span class='line'><span class="nv">calculate</span><span class="p">(</span><span class="nf">multi,</span> <span class="nv">Oper1,</span> <span class="nv">Oper2,</span> <span class="nv">Result</span><span class="p">)</span> <span class="nv">:-</span> <span class="nv">Result</span> <span class="nv">is</span> <span class="nv">Oper1</span> <span class="nv">*</span> <span class="nv">Oper2</span><span class="o">.</span>
+</span><span class='line'><span class="nv">calculate</span><span class="p">(</span><span class="nf">div,</span> <span class="nv">Oper1,</span> <span class="nv">Oper2,</span> <span class="nv">Result</span><span class="p">)</span> <span class="nv">:-</span> <span class="nv">Result</span> <span class="nv">is</span> <span class="nv">Oper1</span> <span class="nv">/</span> <span class="nv">Oper2</span><span class="o">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如上代码所示，真正的运算是在calculate谓词中完成的，它会根据不同的操作符进行不同的计算。现在，我们还有一种语句需要处理，(define a 1)，目前的谓词不能识别第一个元素是define的列表。所以我们要一个谓词来“忽略”这样的语句：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">getValue</span><span class="p">([</span><span class="nv">_|_</span><span class="p">]</span><span class="o">,</span> <span class="nv">_</span><span class="p">)</span><span class="o">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>单独一个运算语句已经能够处理了，我们可以简单地把它扩展到多个语句的情况。一个run谓词可以完成这件事：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">run</span><span class="p">([])</span><span class="o">.</span>
+</span><span class='line'><span class="nv">run</span><span class="p">([</span><span class="nv">FirstStmt|OtherStmts</span><span class="p">])</span> <span class="nv">:-</span>
+</span><span class='line'>    <span class="nv">getValue</span><span class="p">(</span><span class="nf">FirstStmt,</span> <span class="nv">Result</span><span class="p">)</span><span class="o">,</span>
+</span><span class='line'>    <span class="nv">writeln</span><span class="p">(</span><span class="nf">Result</span><span class="p">)</span><span class="o">,</span>
+</span><span class='line'>    <span class="nv">run</span><span class="p">(</span><span class="nf">OtherStmts</span><span class="p">)</span><span class="o">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>现在，这个运行时环境可以解释执行下面“复杂”的代码了：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="k">define </span><span class="nv">a</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="nb">* </span><span class="mi">3</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="nb">+ </span><span class="mi">1</span> <span class="p">(</span><span class="nb">- </span><span class="mi">5</span> <span class="mi">2</span><span class="p">)</span> <span class="p">(</span><span class="nb">* </span><span class="mi">3</span> <span class="p">(</span><span class="nb">/ </span><span class="mi">20</span> <span class="mi">5</span><span class="p">)))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>计算的结果是15和16，而第一行define则被忽略掉了。</p>
+
+<p>到目前为止，我们完成了源代码读取、词法分析、文法分析、运行时解析的步骤，这个简单的解析器能够计算不含变量的四则运算。但是作为一个体面的运行时，我们要给它增加定义变量的能力。关于变量的作用域，在本文的开始已经描述过。我们知道，“符号表”是支持变量的核心要素，本文的最后一部分我将讲述如何构建符号表。</p>
+
+<p>符号表本质上就是个字典，里面保存了变量名和变量值的映射。Prolog并没有直接提供字典，但是我们可以用一个二维数组来模拟：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">[[</span><span class="nv">ident</span><span class="p">(</span><span class="nf">a</span><span class="p">)</span><span class="o">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">,</span> <span class="p">[</span><span class="nv">ident</span><span class="p">(</span><span class="nf">b</span><span class="p">)</span><span class="o">,</span> <span class="mi">2</span><span class="p">]]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>ident(a)和ident(b)表示变量a和b，这种表示是为了和a、b的原子形式区分。接下来，创建符号表的谓词并不复杂：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">createSymbolTables</span><span class="p">(</span><span class="nf">Stmts,</span> <span class="nv">ST</span><span class="p">)</span> <span class="nv">:-</span>
+</span><span class='line'>    <span class="nv">createSymbolTable</span><span class="p">(</span><span class="nf">Stmts,</span> <span class="p">[]</span><span class="o">,</span> <span class="nv">ST</span><span class="p">)</span><span class="o">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">createSymbolTable</span><span class="p">([]</span><span class="o">,</span> <span class="nv">ST,</span> <span class="nv">ST</span><span class="p">)</span><span class="o">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">createSymbolTable</span><span class="p">([[</span><span class="nv">define,</span> <span class="nv">ident</span><span class="p">(</span><span class="nf">Id</span><span class="p">)</span><span class="o">,</span> <span class="nv">Number</span><span class="p">]</span><span class="nv">|OtherStmts</span><span class="p">]</span><span class="o">,</span> <span class="nv">STSoFar,</span> <span class="nv">ST</span><span class="p">)</span> <span class="nv">:-</span>
+</span><span class='line'>    <span class="nv">number</span><span class="p">(</span><span class="nf">Number</span><span class="p">)</span><span class="o">,</span>
+</span><span class='line'>    <span class="nv">createSymbolTable</span><span class="p">(</span><span class="nf">OtherStmts,</span> <span class="p">[[</span><span class="nv">Id,Number</span><span class="p">]</span><span class="nv">|STSoFar</span><span class="p">]</span><span class="o">,</span> <span class="nv">ST</span><span class="p">)</span><span class="o">.</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">createSymbolTable</span><span class="p">([</span><span class="nv">_|T</span><span class="p">]</span><span class="o">,</span> <span class="nv">ST</span><span class="p">)</span> <span class="nv">:-</span> <span class="nv">createSymbolTables</span><span class="p">(</span><span class="nf">T,ST</span><span class="p">)</span><span class="o">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中最后一个谓词是为了在创建符号表的过程中，只关心define语句，忽略掉其他运算语句。</p>
+
+<p>关于符号表，创建它只是故事的一半，通过符号表查询某个变量的值是另一件重要的事。</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">search</span><span class="p">(</span><span class="nf">_,</span> <span class="p">[]</span><span class="o">,</span> <span class="nv">_</span><span class="p">)</span> <span class="nv">:-</span> <span class="nv">false</span><span class="o">.</span>
+</span><span class='line'><span class="nv">search</span><span class="p">(</span><span class="nf">Id,</span> <span class="p">[[</span><span class="nv">Id,Value</span><span class="p">]</span><span class="nv">|_</span><span class="p">]</span><span class="o">,</span> <span class="nv">Value</span><span class="p">)</span><span class="o">.</span>
+</span><span class='line'><span class="nv">search</span><span class="p">(</span><span class="nf">Id,</span> <span class="p">[</span><span class="nv">_|T</span><span class="p">]</span><span class="o">,</span> <span class="nv">Value</span><span class="p">)</span> <span class="nv">:-</span>
+</span><span class='line'>    <span class="nv">search</span><span class="p">(</span><span class="nf">Id,</span> <span class="nv">T,</span> <span class="nv">Value</span><span class="p">)</span><span class="o">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当遍历到最后一个符号表的时候，如果仍然找不到某个变量的值，这将被认为是一个程序错误，所以，上面第一个search谓词是以false结束的。另外，如果search在第一个谓词时失败的话，它已经没有回朔的余地了，这样将继而导致整个Prolog运行时失败。这个行为是合理的，任何时候，当遇到一个没有定义的变量时程序都应该停机。</p>
+
+<p>创建完成了符号表，我们现在可以扩展运行时来支持定义变量了。运行时现在应该遍历两次AST，第一次创建符号表ST，第二次解释求值：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">scheme</span><span class="p">(</span><span class="nf">Stmts</span><span class="p">)</span> <span class="nv">:-</span>
+</span><span class='line'>    <span class="nv">createSymbolTables</span><span class="p">(</span><span class="nf">Stmts,</span> <span class="nv">ST</span><span class="p">)</span><span class="o">,</span>
+</span><span class='line'>    <span class="nv">run</span><span class="p">(</span><span class="nf">Stmts,</span> <span class="nv">ST</span><span class="p">)</span><span class="o">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>我们看到run谓词已经多了一个ST参数，ST也会进而传递给下面的getValue谓词。在前面的代码中，getValue可以对四则运算和数字求值了，现在我们要扩展它，让它可以对变量求值，当然，这是指从符号表中找出这个变量对应的值：</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">getValue</span><span class="p">(</span><span class="nf">ST,</span> <span class="nv">ident</span><span class="p">(</span><span class="nf">Id</span><span class="p">)</span><span class="o">,</span> <span class="nv">Value</span><span class="p">)</span> <span class="nv">:-</span> <span class="nv">search</span><span class="p">(</span><span class="nf">Id,</span> <span class="nv">ST,</span> <span class="nv">Value</span><span class="p">)</span><span class="o">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>正如刚刚提到的，getValue多了一个参数ST，其他的getValue也是一样，尽管它们并不需要它。</p>
+
+<p>好了，深呼吸一下吧，再整理整理手头的代码。如果你跟上了这篇文章的步伐，会看到一个Scheme子集的运行时环境。如果没跟上也没关系，下面的<a href="https://github.com/isaachan/scheme-runtime">链接</a>提供了源代码。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-04T09:49:00+08:00" pubdate data-updated="true">Oct 4<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/compiler/'>compiler</a>, <a class='category' href='/blog/categories/language/'>language</a>, <a class='category' href='/blog/categories/parser/'>parser</a>, <a class='category' href='/blog/categories/porlog/'>porlog</a>, <a class='category' href='/blog/categories/scheme/'>scheme</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/10/04/build-simple-scheme-parser-using-prolog-3/" title="Previous Post: Scheme on Prolog (3)：文法分析">&laquo; Scheme on Prolog (3)：文法分析</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 -  -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'isaachan';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://isaachan.github.com/blog/2014/10/04/build-simple-scheme-parser-using-prolog-4/';
+        var disqus_url = 'http://isaachan.github.com/blog/2014/10/04/build-simple-scheme-parser-using-prolog-4/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
