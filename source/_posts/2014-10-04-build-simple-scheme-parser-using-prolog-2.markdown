@@ -10,7 +10,7 @@ categories:
  - language
  - compiler
 ---
-在第一节中，我们实现了readFile谓词，利用它可以读取源文件的内容，并把字节流保存在一个整数的列表中。接下来我们将消费这些数据，通过它们创建词法单元。因此，本节将讲述如何构造一个词法分析器来完成这件事。
+在上一篇“[读取源文件](/blog/2014/10/02/build-simple-scheme-parser-using-prolog-1/)”的文章中，我们实现了readFile谓词，利用它可以读取源文件的内容，并把字节流保存在一个整数的列表中。接下来我们将消费这些数据，通过它们创建词法单元。因此，本节将讲述如何构造一个词法分析器来完成这件事。
 
 ## 词法分析 ##
 
@@ -37,7 +37,7 @@ getToken([9|Rest], Rest, ws). %% WhiteSpace
 getToken([10|Rest], Rest, ws). %% WhiteSpace
 {% endcodeblock %}
 
-这段代码实现了getToken谓词，这个谓词的第一个参数是进行词法单元匹配以前的字节流，第二个参数是匹配过词法单元后剩余的字符流，第三个参数表示此次getToken匹配到的词法单元。代码中出现的整数，40，41，42...是字符的ASCII码，后面的注释解释了它代表的字符。上述代码中的[40|Rest]的词法单元是一个列表，它的第一个元素是40，其他元素是Rest。这很类似于scheme中的car和cdr操作。[]则表示一个空的列表。Prolog的这种文法极大的方便了列表的处理。如果你熟悉Erlang，会发现Prolog处理列表的文法和语义是一样的（事实上这两种语言也确实深有渊源）。
+这段代码实现了getToken谓词，这个谓词的第一个参数是进行词法单元匹配以前的字节流，第二个参数是匹配过词法单元后剩余的字符流，第三个参数表示此次getToken匹配到的词法单元。代码中出现的整数，40，41，42...是字符的ASCII码，后面的注释解释了它代表的字符。上述代码中的[40|Rest]的词法单元是一个列表，它的第一个元素是40，其他元素是Rest。这很类似于scheme中的car和cdr操作。[]则表示一个空的列表。Prolog的这种文法极大的方便了列表的处理。如果你熟悉Erlang，会发现它和Prolog处理列表的文法和语义是一样的（事实上这两种语言也确实深有渊源！）。
 
 接下来，我们看看如何识别define关键字。由于这个词法单元的长度是固定的，因此识别它也并不复杂：
 
@@ -74,6 +74,8 @@ getTokens(Input, TokensSoFar, Tokens) :-
 
 词法分析完成了吗？不不，我们还没有实现匹配标识符和数字的谓词！标识符和数字稍微复杂一些，它们的长度不是固定的，因此在匹配它们的getToken谓词中，还需要多一个参数，用来临时保存计算过程中已匹配的字节。在实现getToken之前，先看一下描述数字的自动机，
 
+![状态机](/images/scheme-parser-using-prolog/number-fsm.gif)
+
 标识符的自动机和它是类似的。我们可以这样描述该自动机的行为：如果输入的第一个字节是数字，则进入number状态，并记录下这个数字；在number状态下，如果输入的第一个字节是数字，则继续追加该数字； 在number状态下，如果输入的第一个字节是字符，则是非法输入；在number状态下，如果输入的第一个字节是+ - * / ( ) Ws中的任何一个，则结束number状态，并完成一个number词法单元的识别。
 
 {% codeblock lang:scheme %}
@@ -107,7 +109,8 @@ single(T) :- T=39; T=9; T=10; T=40; T=41; T=42; T=43; T=45; T=47.
 现在，我们有file和getTokens两个谓词了，把它们写在一起已经可以分析指定文件的词法了。
 
 {% codeblock lang:scheme %}
-:- file(“example.ss”, FileContent), getTokens(FileContent, Tokens).
+:- file(“example.ss”, FileContent), 
+   getTokens(FileContent, Tokens).
 {% endcodeblock %}
 
-接下了，将是更有挑战的工作——文法分析。
+接下了，将是更有挑战的工作——[文法分析](/blog/2014/10/04/build-simple-scheme-parser-using-prolog-3/)。

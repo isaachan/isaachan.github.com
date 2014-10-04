@@ -11,12 +11,13 @@ categories:
  - compiler
 ---
 
-我们知道，形式文法是由一组文法生成式组成的。一个生成式可能是这样子的，
+在[上一篇文章](/blog/2014/10/04/build-simple-scheme-parser-using-prolog-2/)中，我们完成了词法分析，从源代码文件中获得了词法单元的序列。接下来，这些词法单元会被送到文法分析器中做进一步处理。我们知道，形式文法是由一组文法生成式组成的。一个生成式可能是这样子的，
 
 {% codeblock lang:antlr %}
 IfStat -> 'if' '(' Expr ')' StateBlock
 {% endcodeblock %}
-这是常见的描述if语句的生成式，它表达了这样的含义：如果匹配了‘if’，并且匹配了'('，并且匹配了Expr，并且匹配了')'，并且遇到了StateBlok，那么就匹配了一个完整的IfStat。这里我故意使用了“如果”、“并且”、“那么”，目的是想说明文法生成式和Prolog语句是有着惊人的相似的。每一个生成式实际上就是一个命题。因此，相对于命令式语言，用Prolog进行文法解析是一件比较简单的工作。下面，我们开始用Prolog实现简单Scheme的文法分析部分。
+
+这是常见的描述if语句的生成式，它表达了这样的含义：如果匹配了‘if’，并且匹配了'('，并且匹配了Expr，并且匹配了')'，并且遇到了StateBlock，那么就匹配了一个完整的IfStat。这里我故意使用了“如果”、“并且”、“那么”，目的是想说明文法生成式和Prolog语句是有着惊人的相似的。每一个生成式实际上就是一个命题。因此，相对于命令式语言，用Prolog进行文法解析是一件比较简单的工作。下面，我们开始用Prolog实现简单Scheme的文法分析部分。
 <!-- more -->
 
 ## 文法分析  ##
@@ -101,7 +102,9 @@ matchItems(In, Out, ItemsSoFar, Items) :-
 现在，可以把我们已经有的谓词组合到一起了，
 
 {% codeblock lang:scheme %}
-:- file(“example.ss”, FileContent), getTokens(FileContent, Tokens), parser(Tokens, Statements).
+:- file(“example.ss”, FileContent), 
+   getTokens(FileContent, Tokens),
+   parser(Tokens, Statements).
 {% endcodeblock %}
 
-下来是本文的最后一部份，scheme的运行时，启程吧！
+下来是本文的[最后一部份](/blog/2014/10/04/build-simple-scheme-parser-using-prolog-4/)，scheme的运行时，启程吧！

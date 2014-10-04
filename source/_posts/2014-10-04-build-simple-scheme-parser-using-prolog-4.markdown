@@ -10,6 +10,8 @@ categories:
  - language
  - compiler
 ---
+现在，我们已经用Prolog实现了范例Scheme语言的[源代码读取](/blog/2014/10/02/build-simple-scheme-parser-using-prolog-1/)、[词法分析](/blog/2014/10/04/build-simple-scheme-parser-using-prolog-2/)和[语法分析](/blog/2014/10/04/build-simple-scheme-parser-using-prolog-3/)的部分，并且获得了AST。最后，我们要实现一个Scheme的运行时来消费AST，生成最终的计算结果。
+
 当解析器生成了抽象语法树(AST)后，运行时环境可以对它进行处理，计算语法树表达的数值。如果代码只是如下简单的四则运算，
 
 {% codeblock lang:scheme %}
