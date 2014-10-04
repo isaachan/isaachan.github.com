@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "基于Prolog构造Scheme解析器之二：词法分析"
+title: "Scheme on Prolog (2)：词法分析"
 date: 2014-10-04 09:49
 comments: true
 categories: 
@@ -19,6 +19,7 @@ categories:
 - +, -, *, /, (, ),Whitespace
 - 'define'
 - identifier number
+<!-- more -->
 
 第一行列出的词法单元只包含一个字符，第二行的‘define’是一个关键字，虽然它不是一个字符组成的，但是仍然是固定长度的。第三行的identifier和number是标识符和数字，它们几乎出现在所有语言中，并且它们的长度不是固定的。
 

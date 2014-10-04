@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "基于Prolog构造Scheme解析器之三：文法分析"
+title: "Scheme on Prolog (3)：文法分析"
 date: 2014-10-04 09:49
 comments: true
 categories: 
@@ -17,6 +17,7 @@ categories:
 IfStat -> 'if' '(' Expr ')' StateBlock
 {% endcodeblock %}
 这是常见的描述if语句的生成式，它表达了这样的含义：如果匹配了‘if’，并且匹配了'('，并且匹配了Expr，并且匹配了')'，并且遇到了StateBlok，那么就匹配了一个完整的IfStat。这里我故意使用了“如果”、“并且”、“那么”，目的是想说明文法生成式和Prolog语句是有着惊人的相似的。每一个生成式实际上就是一个命题。因此，相对于命令式语言，用Prolog进行文法解析是一件比较简单的工作。下面，我们开始用Prolog实现简单Scheme的文法分析部分。
+<!-- more -->
 
 ## 文法分析  ##
 

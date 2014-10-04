@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "基于Prolog构造Scheme解析器之四：运行时环境"
+title: "Scheme on Prolog (4)：运行时环境"
 date: 2014-10-04 09:49
 comments: true
 categories: 
@@ -16,6 +16,7 @@ categories:
 (- 3 1) 
 (+ (* 3 5) 2)
 {% endcodeblock %}
+<!-- more -->
 
 那么对AST遍历一次就足够了，甚至在解析的过程中就可以获得结果了，根本不需要生成AST。但是，我们希望这个运行时能够支持通过define定义变量，甚至变量的作用域是全局的，而不仅仅是从它声明的地方开始，
 
